@@ -4,9 +4,9 @@ Models for YourResourceModel
 All of the models are stored in this module
 """
 import logging
-from flask_sqlalchemy import SQLAlchemy
 from abc import abstractmethod
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
 
@@ -156,7 +156,6 @@ class Shopcart(db.Model, PersistentBase):
 
         # Calculate the total_price for the shopcart
         self.total_price = self.get_total_price()
-
         db.session.add(self)
         db.session.commit()
 
@@ -217,3 +216,12 @@ class Item(db.Model, PersistentBase):
                 "bad or no data " + error.args[0]
             ) from error
         return self
+
+    def create(self):
+        """
+        Creates an item to the database
+        """
+        logger.info("Creating a item")
+
+        db.session.add(self)
+        db.session.commit()

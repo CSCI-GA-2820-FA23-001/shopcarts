@@ -17,5 +17,19 @@
     "cucumberautocomplete.strictGherkinValidation": true,
     "cucumberautocomplete.smartSnippets": true,
     "cucumberautocomplete.gherkinDefinitionPart": "@(given|when|then)\\(",
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "PostgreSQL",
+            "name": "testSample",
+            "connectString": "postgresql://postgres:postgres@postgres:5432/postgres"
+        }
+    ],
+    "cSpell.words": [
+        "ondelete",
+        "Shopcart",
+        "sqlalchemy"
+    ],
 }
 
