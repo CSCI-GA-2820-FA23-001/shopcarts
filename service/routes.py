@@ -2,6 +2,7 @@
 My Service
 
 Describe what your service does here
+GET /shopcarts/{id} - Returns the Shopcart with a given id number
 """
 
 from service.common import status  # HTTP Status Codes
@@ -31,6 +32,30 @@ def index():
 # Place your REST API code here ...
 
 
+@app.route("/shopcarts/<int:old_cart_id>/items", methods=["POST"])
+def create_items(old_cart_id):
+    """
+    Creates a Item
+    This endpoint will create an item based the data in the body that is posted
+    """
+    app.logger.info("Request to create an Item")
+    check_content_type("application/json")
+    # Create the shopcart
+
+    newitem = Item()
+    newitem.deserialize(request.get_json())
+    newitem.create()
+    # Create a message to return
+    message = newitem.serialize()
+    location_url = url_for(
+        "read_item", cart_id=old_cart_id, item_id=newitem.id, _external=True
+    )
+
+    return make_response(
+        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+    )
+
+
 ######################################################################
 # UPDATE AN EXISTING ITEM
 ######################################################################
@@ -46,11 +71,13 @@ def update_item(cart_id, item_id):
     if type(item_id) != int:
         raise TypeError("item_id should be int")
 
+    cart = Shopcart.find(cart_id)
+    if not cart:
+        abort(status.HTTP_404_NOT_FOUND, f"Cart with id '{cart_id}' was not found.")
     item = Item.find(item_id)
 
     if not item:
         abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
-
     item.deserialize(request.get_json())
 
     item.id = item_id
@@ -72,8 +99,12 @@ def read_item(cart_id, item_id):
     """
 
     app.logger.info("Request for item with id: %s", item_id)
+
     if type(item_id) != int:
         raise TypeError("item_id should be int")
+    cart = Shopcart.find(cart_id)
+    if not cart:
+        abort(status.HTTP_404_NOT_FOUND, f"Cart with id '{cart_id}' was not found.")
 
     item = Item.find(item_id)
     if not item:
@@ -124,3 +155,25 @@ def check_content_type(media_type):
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {media_type}",
     )
+
+
+######################################################################
+# RETRIEVE A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>", methods=["GET"])
+def get_shopcarts(shopcart_id):
+    """
+    Retrieve a single Shopcart
+
+    This endpoint will return a Shopcart based on it's id
+    """
+    app.logger.info("Request for shopcart with id: %s", shopcart_id)
+    shopcart = Shopcart.find(shopcart_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' was not found.",
+        )
+
+    app.logger.info("Returning shopcart_id: %s", shopcart.id)
+    return jsonify(shopcart.serialize()), status.HTTP_200_OK

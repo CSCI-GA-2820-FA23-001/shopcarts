@@ -216,3 +216,13 @@ class Item(db.Model, PersistentBase):
                 "bad or no data " + error.args[0]
             ) from error
         return self
+
+    def create(self):
+        """
+        Creates an Shopcart to the database
+        """
+        logger.info("Creating a item")
+
+        # Calculate the total_price for the shopcart
+        db.session.add(self)
+        db.session.commit()
