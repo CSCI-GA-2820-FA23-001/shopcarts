@@ -219,10 +219,9 @@ class Item(db.Model, PersistentBase):
 
     def create(self):
         """
-        Creates an Shopcart to the database
+        Creates an item to the database
         """
         logger.info("Creating a item")
 
-        # Calculate the total_price for the shopcart
         db.session.add(self)
         db.session.commit()
