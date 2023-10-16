@@ -137,6 +137,16 @@ class TestShopcartServer(TestCase):
         updated_item = response.get_json()
         self.assertEqual(updated_item["name"], "updated_name")
 
+    def test_create_item(self):
+        """It should create an Item"""
+        # create a pet to update
+        test_shopcart = self._create_shopcarts(1)[0]
+        test_item = ItemFactory(shopcart_id=test_shopcart.id)
+        response = self.client.post(
+            f"{BASE_URL}/{test_shopcart.id}/items", json=test_item.serialize()
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
     def test_delete_item(self):
         """It should Delete an Item"""
         # create a pet to update
