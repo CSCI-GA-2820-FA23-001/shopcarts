@@ -6,7 +6,10 @@ Describe what your service does here
 
 from flask import jsonify, request, url_for, abort
 from service.common import status  # HTTP Status Codes
-from service.models import ShopCart
+<<<<<<< HEAD
+#from service.models import ShopCart
+=======
+>>>>>>> master
 
 # Import Flask application
 from . import app
@@ -17,7 +20,7 @@ from . import app
 ######################################################################
 @app.route("/")
 def index():
-    """ Root URL response """
+    """Root URL response"""
     return (
         "Reminder: return some useful information in json format about the service here",
         status.HTTP_200_OK,
