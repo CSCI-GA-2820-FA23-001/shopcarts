@@ -100,6 +100,8 @@ def read_item(cart_id, item_id):
     """
 
     app.logger.info("Request for item with id: %s", item_id)
+    if not isinstance(cart_id, int):
+        raise TypeError("cart_id should be int")
 
     if not isinstance(item_id, int):
         raise TypeError("item_id should be int")
@@ -191,6 +193,9 @@ def list_items(shopcart_id):
     This endpoint will return a list of items based on shopcart's id
     """
     app.logger.info("Request for item list of the shopcart with id: %s", shopcart_id)
+
+    if not isinstance(shopcart_id, int):
+        raise ValueError("shopcart_id must be an integer while list items of shopcart")
     shopcart = Shopcart.find(shopcart_id)
     if not shopcart:
         abort(
