@@ -43,3 +43,8 @@ class TestYourResourceServer(TestCase):
         """ It should call the home page """
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    def test_list_shopcarts(self):
+        """It should list all shopcarts"""
+        resp = self.client.get("/shopcarts")
+        self.assertEqual(resp.status_code,status.HTTP_200_OK | status.HTTP_404_NOT_FOUND)

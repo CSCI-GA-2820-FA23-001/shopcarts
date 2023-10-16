@@ -38,6 +38,7 @@ class TestShopCart(unittest.TestCase):
         db.session.query(ShopCart).delete()  # clean up the last tests
         db.session.query(Item).delete()  # clean up the last tests
         db.session.commit()
+        self.client = app.test_client()
 
     def tearDown(self):
         """This runs after each test"""
