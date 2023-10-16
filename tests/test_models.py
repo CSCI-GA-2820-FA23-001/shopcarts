@@ -7,6 +7,7 @@ import logging
 import unittest
 from service import app
 from service.models import Shopcart, Item, db
+from tests.factories import ShopcartFactory
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -47,6 +48,19 @@ class TestShopcart(unittest.TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
-    def test_example_replace_this(self):
-        """It should always be true"""
-        self.assertTrue(True)
+    def test_create_shopcart(self):
+        """It should Create an Shopcart and assert that it exists"""
+        fake_shopcart = ShopcartFactory()
+        # pylint: disable=unexpected-keyword-arg
+        shopcart = Shopcart(
+            customer_id=fake_shopcart.customer_id,
+            creation_time=fake_shopcart.creation_time,
+            last_updated_time=fake_shopcart.last_updated_time,
+            total_price=fake_shopcart.total_price,
+        )
+        self.assertIsNotNone(shopcart)
+        self.assertEqual(shopcart.id, None)
+        self.assertEqual(shopcart.customer_id, fake_shopcart.customer_id)
+        self.assertEqual(shopcart.creation_time, fake_shopcart.creation_time)
+        self.assertEqual(shopcart.last_updated_time, fake_shopcart.last_updated_time)
+        self.assertEqual(shopcart.total_price, fake_shopcart.total_price)
