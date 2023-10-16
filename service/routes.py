@@ -118,12 +118,9 @@ def read_item(cart_id, item_id):
     return jsonify(item.serialize()), status.HTTP_200_OK
 
 
-
 ######################################################################
 # CREATE A NEW SHOPCART
 ######################################################################
-
-
 @app.route("/shopcarts", methods=["POST"])
 def create_shopcarts():
     """
@@ -215,7 +212,7 @@ def list_items(shopcart_id):
 # List all shopcarts
 ######################################################################
 
-@app.route("/shopcarts",methods=["GET"])
+@app.route("/shopcarts", methods=["GET"])
 def list_shopcarts():
     """Return all the shopcarts"""
     app.logger.info("Request for shopcarts list")
@@ -228,4 +225,4 @@ def list_shopcarts():
             "No shopcart found",
         )
     results = [shopcart.serialize() for shopcart in shopcarts]
-    return make_response(jsonify(results),status.HTTP_200_OK)
+    return make_response(jsonify(results), status.HTTP_200_OK)
