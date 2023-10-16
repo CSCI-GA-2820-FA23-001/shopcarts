@@ -185,6 +185,16 @@ class TestShopcartServer(TestCase):
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
 
+    def test_list_shopcarts(self):
+        """It should List all shopcarts"""
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code,status.HTTP_404_NOT_FOUND)
+        self._create_shopcarts(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data),5)
+
     def test_get_item_list(self):
         """It should Get a list of Items"""
         test_shopcart = self._create_shopcarts(1)[0]

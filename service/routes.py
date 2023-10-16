@@ -30,6 +30,7 @@ def index():
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 
+
 # Place your REST API code here ...
 
 
@@ -115,6 +116,7 @@ def read_item(cart_id, item_id):
 
     app.logger.info("Returning item: %s", item.name)
     return jsonify(item.serialize()), status.HTTP_200_OK
+
 
 
 ######################################################################
@@ -207,3 +209,23 @@ def list_items(shopcart_id):
 
     app.logger.info("Returning item list with shopcart_id: %s", shopcart.id)
     return jsonify(results), status.HTTP_200_OK
+
+
+######################################################################
+# List all shopcarts
+######################################################################
+
+@app.route("/shopcarts",methods=["GET"])
+def list_shopcarts():
+    """Return all the shopcarts"""
+    app.logger.info("Request for shopcarts list")
+    shopcarts = []
+
+    shopcarts = Shopcart.all()
+    if not shopcarts:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            "No shopcart found",
+        )
+    results = [shopcart.serialize() for shopcart in shopcarts]
+    return make_response(jsonify(results),status.HTTP_200_OK)
