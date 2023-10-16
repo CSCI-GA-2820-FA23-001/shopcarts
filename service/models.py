@@ -38,13 +38,6 @@ class PersistentBase:
     def deserialize(self, data: dict) -> None:
         """Convert a dictionary into an object"""
 
-    def create(self):
-        """Creates a ShopCart to the database"""
-        logger.info("Creating %s", self.name)
-        self.id = None  # id must be none to generate next primary key
-        db.session.add(self)
-        db.session.commit()
-
     def update(self):
         """Updates a ShopCart to the database"""
         logger.info("Updating %s", self.name)
@@ -141,6 +134,31 @@ class Shopcart(db.Model, PersistentBase):
                 "bad or no data - " + error.args[0]
             ) from error
         return self
+
+    def get_total_price(self) -> float:
+        """It can calculate the total price of the shopcart"""
+        total = float(0.0)
+        for item in self.items:
+            total += float(item.price) * float(item.quantity)
+
+        return total
+
+    def create(self):
+        """
+        Creates an Shopcart to the database
+        """
+        logger.info("Creating a shopcart")
+        self.id = None  # id must be none to generate next primary key
+
+        # Set the creation_time and last_updated_time as the time this function is called.
+        self.creation_time = datetime.now()
+        self.last_updated_time = self.creation_time
+
+        # Calculate the total_price for the shopcart
+        self.total_price = self.get_total_price()
+
+        db.session.add(self)
+        db.session.commit()
 
 
 ######################################################################
