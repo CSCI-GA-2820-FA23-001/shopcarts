@@ -71,6 +71,7 @@ def check_content_type(media_type):
         f"Content-Type must be {media_type}",
     )
 
+
 ######################################################################
 # RETRIEVE A SHOPCART
 ######################################################################
@@ -89,5 +90,5 @@ def get_shopcarts(shopcart_id):
             f"Shopcart with id '{shopcart_id}' was not found.",
         )
 
-    app.logger.info("Returning shopcart: %s", shopcart.name)
+    app.logger.info("Returning shopcart_id: %s", shopcart.id)
     return jsonify(shopcart.serialize()), status.HTTP_200_OK
