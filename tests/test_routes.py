@@ -75,12 +75,6 @@ class TestShopcartServer(TestCase):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-<<<<<<< HEAD
-    def test_list_shopcarts(self):
-        """It should list all shopcarts"""
-        resp = self.client.get("/shopcarts")
-        self.assertEqual(resp.status_code,status.HTTP_200_OK | status.HTTP_404_NOT_FOUND)
-=======
     def test_create_shopcart(self):
         """It should Create a new Shopcart"""
         shopcart = ShopcartFactory()
@@ -129,4 +123,13 @@ class TestShopcartServer(TestCase):
         data = response.get_json()
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
->>>>>>> master
+
+    def test_list_shopcats(self):
+        """It should List all shopcarts"""
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code,status.HTTP_404_NOT_FOUND)
+        self._create_shopcarts(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data),5)

@@ -104,11 +104,12 @@ def list_shopcarts():
     """Return all the shopcarts"""
     app.logger.info("Request for shopcarts list")
     shopcarts = []
+
     shopcarts = Shopcart.all()
     if not shopcarts:
         abort(
             status.HTTP_404_NOT_FOUND,
             "No shopcart found",
         )
-    results = [shopcarts.serialize() for shopcart in shopcarts]
+    results = [shopcart.serialize() for shopcart in shopcarts]
     return make_response(jsonify(results),status.HTTP_200_OK)
