@@ -17,7 +17,7 @@ db = SQLAlchemy()
 # Function to initialize the database
 def init_db(app):
     """Initializes the SQLAlchemy app"""
-    ShopCart.init_db(app)
+    Shopcart.init_db(app)
 
 
 class DataValidationError(Exception):
@@ -79,7 +79,7 @@ class PersistentBase:
         return cls.query.get(by_id)
 
 
-class ShopCart(db.Model, PersistentBase):
+class Shopcart(db.Model, PersistentBase):
     """
     Class that represents a Shopping Cart
     """
