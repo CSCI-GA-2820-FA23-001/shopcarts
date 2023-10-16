@@ -5,9 +5,10 @@ Describe what your service does here
 GET /shopcarts/{id} - Returns the Shopcart with a given id number
 """
 
+from flask import jsonify, request, url_for, abort, make_response
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
-from flask import jsonify, request, url_for, abort, make_response
+
 
 # Import Flask application
 from . import app
@@ -68,7 +69,7 @@ def update_item(cart_id, item_id):
     """
     app.logger.info("Request to update item with id: %s", item_id)
     check_content_type("application/json")
-    if type(item_id) != int:
+    if not isinstance(item_id, int):
         raise TypeError("item_id should be int")
 
     cart = Shopcart.find(cart_id)
@@ -100,7 +101,7 @@ def read_item(cart_id, item_id):
 
     app.logger.info("Request for item with id: %s", item_id)
 
-    if type(item_id) != int:
+    if not isinstance(item_id, int):
         raise TypeError("item_id should be int")
     cart = Shopcart.find(cart_id)
     if not cart:
@@ -183,7 +184,7 @@ def get_shopcarts(shopcart_id):
 # LIST ITEMS IN A SHOPCART
 ######################################################################
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["GET"])
-def list_items(shopcart_id, item_id):
+def list_items(shopcart_id):
     """
     Return all of the items in a Shopcart
 

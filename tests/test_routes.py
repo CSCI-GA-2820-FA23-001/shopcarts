@@ -69,7 +69,7 @@ class TestShopcartServer(TestCase):
         return shopcarts
 
     def _create_items(self, count, shop_cart_id):
-        """Factory method to create shopcarts in bulk"""
+        """Factory method to create items in bulk"""
         items = []
         for _ in range(count):
             test_item = ItemFactory(shopcart_id=shop_cart_id)
@@ -184,3 +184,13 @@ class TestShopcartServer(TestCase):
         data = response.get_json()
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
+
+    def test_get_item_list(self):
+        """It should Get a list of Items"""
+        test_shopcart = self._create_shopcarts(1)[0]
+        self._create_items(5, test_shopcart.id)
+
+        response = self.client.get(f"{BASE_URL}/{test_shopcart.id}/items")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
