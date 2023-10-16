@@ -73,7 +73,7 @@ def delete_items(shopcart_id, item_id):
         "Request to delete Item %s for ShopCart id: %s", item_id, shopcart_id
     )
     check_content_type("application/json")
-    if type(item_id) != int:
+    if not isinstance(item_id, int):
         raise TypeError("item_id should be int")
 
     cart = Shopcart.find(shopcart_id)
