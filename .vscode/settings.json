@@ -26,5 +26,10 @@
             "connectString": "postgresql://postgres:postgres@postgres:5432/postgres"
         }
     ],
+    "cSpell.words": [
+        "ondelete",
+        "Shopcart",
+        "sqlalchemy"
+    ],
 }
 

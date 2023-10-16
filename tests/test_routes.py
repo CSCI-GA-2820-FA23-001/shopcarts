@@ -9,7 +9,7 @@ import os
 import logging
 from unittest import TestCase
 from service import app
-from service.models import ShopCart, Item, db
+from service.models import Shopcart, Item, db
 from service.common import status  # HTTP Status Codes
 
 DATABASE_URI = os.getenv(
@@ -32,18 +32,17 @@ class TestRoute(TestCase):
 
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
-        ShopCart.init_db(app)
+        Shopcart.init_db(app)
 
     @classmethod
     def tearDownClass(cls):
         """This runs once after the entire test suite"""
-        db.session.remove()
-        db.drop_all()
+        db.session.close()
 
     def setUp(self):
         """This runs before each test"""
         self.client = app.test_client()
-        db.session.query(ShopCart).delete()  # clean up the last tests
+        db.session.query(Shopcart).delete()  # clean up the last tests
         db.session.query(Item).delete()  # clean up the last tests
         db.session.commit()
 
@@ -61,7 +60,10 @@ class TestRoute(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     def test_read_item(self):
-        sample_shopcart = ShopCart(customer_id=0, total_price=10)
+        sample_shopcart = Shopcart(customer_id=10, total_price=10)
+        db.session.add(sample_shopcart)
+        db.session.commit()
+
         sample_item = Item(
             name="TestItem",
             price=10.99,
@@ -69,7 +71,7 @@ class TestRoute(TestCase):
             quantity=5,
             shopcart_id=sample_shopcart.id,
         )
-        db.session.add(sample_shopcart, sample_item)
+        db.session.add(sample_item)
         db.session.commit()
 
         # Use the test client to make requests to the api
@@ -88,13 +90,36 @@ class TestRoute(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_update_item(self):
-        response = self.client.put(
-            "/items/<id>",
-            json={"name": "item_name", "price": "item_price"},
-            content_type="sth to pass not as json",
+        # Create a sample item and shopcart
+        sample_shopcart = Shopcart(customer_id=10, total_price=10)
+        db.session.add(sample_shopcart)
+        db.session.commit()
+
+        sample_item = Item(
+            name="TestItem",
+            price=10.99,
+            description="Sample Item",
+            quantity=5,
+            shopcart_id=sample_shopcart.id,
         )
-        status_code = response.status_code
-        data = response.data
-        jsonfile = response.json
+        db.session.add(sample_item)
+        db.session.commit()
+
+        # Update the item
+        new_data = {
+            "shopcart_id": sample_item.id,
+            "name": "UpdatedItem",
+            "price": 7.99,
+            "description": "Updated Description",
+            "quantity": 15,
+        }
+        response = self.client.put(f"/items/{sample_item.id}", json=new_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        updated_data = response.get_json()
+
+        self.assertEqual(updated_data["name"], "UpdatedItem")
+        self.assertEqual(updated_data["price"], 7.99)
+        self.assertEqual(updated_data["description"], "Updated Description")
+        self.assertEqual(updated_data["quantity"], 15)

@@ -4,9 +4,9 @@ Models for YourResourceModel
 All of the models are stored in this module
 """
 import logging
-from flask_sqlalchemy import SQLAlchemy
 from abc import abstractmethod
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger("flask.app")
 
@@ -86,7 +86,7 @@ class Shopcart(db.Model, PersistentBase):
 
     __tablename__ = "shopcart"
     # Table Schema
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     customer_id = db.Column(db.Integer)
     creation_time = db.Column(db.DateTime(), nullable=False, default=datetime.now())
     last_updated_time = db.Column(db.DateTime(), nullable=False, default=datetime.now())
@@ -153,7 +153,7 @@ class Item(db.Model, PersistentBase):
 
     __tablename__ = "item"
     # Table Schema
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     shopcart_id = db.Column(
         db.Integer, db.ForeignKey("shopcart.id", ondelete="CASCADE"), nullable=False
     )
