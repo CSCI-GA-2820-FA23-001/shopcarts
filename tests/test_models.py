@@ -6,7 +6,7 @@ import os
 import logging
 import unittest
 from service import app
-from service.models import ShopCart, Item, db
+from service.models import Shopcart, Item, db
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -14,11 +14,11 @@ DATABASE_URI = os.getenv(
 
 
 ######################################################################
-#  ShopCarts   M O D E L   T E S T   C A S E S
+#  Shopcarts   M O D E L   T E S T   C A S E S
 ######################################################################
 # pylint: disable=too-many-public-methods
-class TestShopCart(unittest.TestCase):
-    """Test Cases for ShopCart Model"""
+class TestShopcart(unittest.TestCase):
+    """Test Cases for Shopcart Model"""
 
     @classmethod
     def setUpClass(cls):
@@ -27,7 +27,7 @@ class TestShopCart(unittest.TestCase):
         app.config["DEBUG"] = False
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
-        ShopCart.init_db(app)
+        Shopcart.init_db(app)
 
     @classmethod
     def tearDownClass(cls):
@@ -35,7 +35,7 @@ class TestShopCart(unittest.TestCase):
 
     def setUp(self):
         """This runs before each test"""
-        db.session.query(ShopCart).delete()  # clean up the last tests
+        db.session.query(Shopcart).delete()  # clean up the last tests
         db.session.query(Item).delete()  # clean up the last tests
         db.session.commit()
 
