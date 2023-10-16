@@ -79,7 +79,7 @@ class Shopcart(db.Model, PersistentBase):
 
     __tablename__ = "shopcart"
     # Table Schema
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     customer_id = db.Column(db.Integer)
     creation_time = db.Column(db.DateTime(), nullable=False, default=datetime.now())
     last_updated_time = db.Column(db.DateTime(), nullable=False, default=datetime.now())
@@ -156,7 +156,6 @@ class Shopcart(db.Model, PersistentBase):
 
         # Calculate the total_price for the shopcart
         self.total_price = self.get_total_price()
-
         db.session.add(self)
         db.session.commit()
 
@@ -171,7 +170,7 @@ class Item(db.Model, PersistentBase):
 
     __tablename__ = "item"
     # Table Schema
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     shopcart_id = db.Column(
         db.Integer, db.ForeignKey("shopcart.id", ondelete="CASCADE"), nullable=False
     )

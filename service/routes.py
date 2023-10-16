@@ -34,8 +34,8 @@ def index():
 ######################################################################
 # UPDATE AN EXISTING ITEM
 ######################################################################
-@app.route("/items/<int:item_id>", methods=["PUT"])
-def update_item(item_id):
+@app.route("/shopcarts/<int:cart_id>/items/<int:item_id>", methods=["PUT"])
+def update_item(cart_id, item_id):
     """
     Update a Item
 
@@ -43,8 +43,11 @@ def update_item(item_id):
     """
     app.logger.info("Request to update item with id: %s", item_id)
     check_content_type("application/json")
+    if type(item_id) != int:
+        raise TypeError("item_id should be int")
 
     item = Item.find(item_id)
+
     if not item:
         abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
 
@@ -60,8 +63,8 @@ def update_item(item_id):
 ######################################################################
 # READ A ITEM
 ######################################################################
-@app.route("/items/<int:item_id>", methods=["GET"])
-def read_item(item_id):
+@app.route("/shopcarts/<int:cart_id>/items/<int:item_id>", methods=["GET"])
+def read_item(cart_id, item_id):
     """
     Retrieve a single item
 
@@ -69,6 +72,9 @@ def read_item(item_id):
     """
 
     app.logger.info("Request for item with id: %s", item_id)
+    if type(item_id) != int:
+        raise TypeError("item_id should be int")
+
     item = Item.find(item_id)
     if not item:
         abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
