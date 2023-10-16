@@ -137,6 +137,34 @@ class TestShopcartServer(TestCase):
         updated_item = response.get_json()
         self.assertEqual(updated_item["name"], "updated_name")
 
+    def test_delete_item(self):
+        """It should Delete an Item"""
+        # create a pet to update
+        test_shopcart = self._create_shopcarts(1)[0]
+        test_item = ItemFactory(shopcart_id=test_shopcart.id)
+        response = self.client.post(
+            f"{BASE_URL}/{test_shopcart.id}/items", json=test_item.serialize()
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = response.get_json()
+        logging.debug(data)
+        item_id = data["id"]
+
+        # send delete request
+        resp = self.client.delete(
+            f"{BASE_URL}/{test_shopcart.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        # retrieve it back and make sure item is not there
+        resp = self.client.get(
+            f"{BASE_URL}/{test_shopcart.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_create_shopcart(self):
         """It should Create a new Shopcart"""
         shopcart = ShopcartFactory()
