@@ -84,6 +84,8 @@ class ShopCart(db.Model, PersistentBase):
     Class that represents a Shopping Cart
     """
 
+    __tablename__ = "shopcart"
+
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
     customer_id = db.Column(db.Integer)
