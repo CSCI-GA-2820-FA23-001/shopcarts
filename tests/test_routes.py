@@ -50,6 +50,22 @@ class TestShopcartServer(TestCase):
         """This runs after each test"""
         db.session.remove()
 
+    def _create_shopcarts(self, count):
+        """Factory method to create shopcarts in bulk"""
+        shopcarts = []
+        for _ in range(count):
+            test_shopcart = ShopcartFactory()
+            response = self.client.post(BASE_URL, json=test_shopcart.serialize())
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_201_CREATED,
+                "Could not create test shopcart",
+            )
+            new_shopcart = response.get_json()
+            test_shopcart.id = new_shopcart["id"]
+            shopcarts.append(test_shopcart)
+        return shopcarts
+
     ######################################################################
     #  S H O P C A R T  T E S T   C A S E S   H E R E
     ######################################################################
@@ -85,3 +101,25 @@ class TestShopcartServer(TestCase):
             "Total price does not match",
         )
         self.assertEqual(new_shopcart["items"], shopcart.items, "Items don't not match")
+
+    def test_get_shopcart(self):
+        """It should Get a single Shopcart"""
+        # get the id of a shopcart
+        test_shopcart = self._create_shopcarts(1)[0]
+        response = self.client.get(f"{BASE_URL}/{test_shopcart.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(
+            data["customer_id"], test_shopcart.customer_id, "Customer Id does not match"
+        )
+        self.assertEqual(
+            data["total_price"], test_shopcart.total_price, "Total price does not match"
+        )
+
+    def test_get_shopcart_not_found(self):
+        """It should not Get a Shopcart thats not found"""
+        response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])

@@ -2,6 +2,7 @@
 My Service
 
 Describe what your service does here
+GET /shopcarts/{id} - Returns the Shopcart with a given id number
 """
 
 from service.common import status  # HTTP Status Codes
@@ -69,3 +70,25 @@ def check_content_type(media_type):
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         f"Content-Type must be {media_type}",
     )
+
+
+######################################################################
+# RETRIEVE A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>", methods=["GET"])
+def get_shopcarts(shopcart_id):
+    """
+    Retrieve a single Shopcart
+
+    This endpoint will return a Shopcart based on it's id
+    """
+    app.logger.info("Request for shopcart with id: %s", shopcart_id)
+    shopcart = Shopcart.find(shopcart_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{shopcart_id}' was not found.",
+        )
+
+    app.logger.info("Returning shopcart_id: %s", shopcart.id)
+    return jsonify(shopcart.serialize()), status.HTTP_200_OK
