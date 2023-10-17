@@ -107,9 +107,9 @@ def update_item(cart_id, item_id):
     This endpoint will update a Item based the id that is posted
     """
     app.logger.info("Request to update item with id: %s", item_id)
-    check_content_type("application/json")
     if not isinstance(item_id, int):
         raise TypeError("item_id should be int")
+
     check_content_type("application/json")
 
     cart = Shopcart.find(cart_id)
