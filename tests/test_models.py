@@ -50,54 +50,77 @@ class TestShopcart(unittest.TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
-    # def test_create_shopcart(self):
-    #     """It should Create an Shopcart and assert that it exists"""
-    #     fake_shopcart = ShopcartFactory()
-    #     # pylint: disable=unexpected-keyword-arg
-    #     shopcart = Shopcart(
-    #         customer_id=fake_shopcart.customer_id,
-    #         creation_time=fake_shopcart.creation_time,
-    #         last_updated_time=fake_shopcart.last_updated_time,
-    #         total_price=fake_shopcart.total_price,
-    #     )
-    #     self.assertIsNotNone(shopcart)
-    #     self.assertEqual(shopcart.id, None)
-    #     self.assertEqual(shopcart.customer_id, fake_shopcart.customer_id)
-    #     self.assertEqual(shopcart.creation_time, fake_shopcart.creation_time)
-    #     self.assertEqual(shopcart.last_updated_time, fake_shopcart.last_updated_time)
-    #     self.assertEqual(shopcart.total_price, fake_shopcart.total_price)
+    def test_create_shopcart(self):
+        """It should Create an Shopcart and assert that it exists"""
+        fake_shopcart = ShopcartFactory()
+        # pylint: disable=unexpected-keyword-arg
+        shopcart = Shopcart(
+            customer_id=fake_shopcart.customer_id,
+            creation_time=fake_shopcart.creation_time,
+            last_updated_time=fake_shopcart.last_updated_time,
+            total_price=fake_shopcart.total_price,
+        )
+        self.assertIsNotNone(shopcart)
+        self.assertEqual(shopcart.id, None)
+        self.assertEqual(shopcart.customer_id, fake_shopcart.customer_id)
+        self.assertEqual(shopcart.creation_time, fake_shopcart.creation_time)
+        self.assertEqual(shopcart.last_updated_time, fake_shopcart.last_updated_time)
+        self.assertEqual(shopcart.total_price, fake_shopcart.total_price)
 
-    def test_deserialize_missing_key(self):
-        missing_key_data = {}
-        with self.assertRaises(DataValidationError):
-            Shopcart().deserialize(missing_key_data)
+    def test_serialize_an_shopcart(self):
+        """It should Serialize an shopcart"""
+        shopcart = ShopcartFactory()
+        item = ItemFactory()
+        shopcart.items.append(item)
+        serial_shopcart = shopcart.serialize()
+        self.assertEqual(serial_shopcart["id"], shopcart.id)
+        self.assertEqual(serial_shopcart["customer_id"], shopcart.customer_id)
+        self.assertEqual(
+            serial_shopcart["creation_time"], shopcart.creation_time.isoformat()
+        )
+        self.assertEqual(
+            serial_shopcart["last_updated_time"], shopcart.last_updated_time.isoformat()
+        )
+        self.assertEqual(serial_shopcart["total_price"], shopcart.total_price)
+        self.assertEqual(len(serial_shopcart["items"]), 1)
+        items = serial_shopcart["items"]
+        self.assertEqual(items[0]["id"], item.id)
+        self.assertEqual(items[0]["shopcart_id"], item.shopcart_id)
+        self.assertEqual(items[0]["name"], item.name)
+        self.assertEqual(items[0]["price"], item.price)
+        self.assertEqual(items[0]["description"], item.description)
+        self.assertEqual(items[0]["quantity"], item.quantity)
 
-    def test_wrong_data_type(self):
-        wrong_type_data = {
-            "customer_id": "1",
-            "creation_time": datetime.now(),
-            "last_updated_time": datetime.now(),
-            "total_price": 0.0,
-        }
-        with self.assertRaises(DataValidationError):
-            Shopcart().deserialize(wrong_type_data)
+    def test_deserialize_an_shopcart(self):
+        """It should Deserialize an shopcart"""
+        shopcart = ShopcartFactory()
+        shopcart.items.append(ItemFactory())
+        shopcart.create()
+        shopcart = shopcart.find(shopcart.id)
+        serial_shopcart = shopcart.serialize()
+        new_shopcart = Shopcart()
+        new_shopcart.deserialize(serial_shopcart)
+        self.assertEqual(new_shopcart.customer_id, shopcart.customer_id)
+        self.assertEqual(new_shopcart.creation_time, shopcart.creation_time)
+        self.assertEqual(new_shopcart.last_updated_time, shopcart.last_updated_time)
+        self.assertEqual(new_shopcart.total_price, shopcart.total_price)
 
-    def test_items_deserialization(self):
-        data_with_items = {
-            "customer_id": 1,
-            "creation_time": datetime.now().isoformat(),
-            "last_updated_time": datetime.now().isoformat(),
-            "total_price": 0.0,
-            "items": [
-                {
-                    "shopcart_id": 1,
-                    "name": "food",
-                    "price": 0.01,
-                    "description": "This is a",
-                    "quantity": 0,
-                }
-            ],
-        }
+    def test_deserialize_shopcart_with_key_error(self):
+        """It should not Deserialize an shopcart with a KeyError"""
+        shopcart = Shopcart()
+        self.assertRaises(DataValidationError, shopcart.deserialize, {})
 
-        result = Shopcart().deserialize(data_with_items)
-        self.assertEqual(len(result.items), 1)
+    def test_deserialize_shopcart_with_type_error(self):
+        """It should not Deserialize an shopcart with a TypeError"""
+        shopcart = Shopcart()
+        self.assertRaises(DataValidationError, shopcart.deserialize, [])
+
+    def test_deserialize_item_key_error(self):
+        """It should not Deserialize an Item with a KeyError"""
+        item = Item()
+        self.assertRaises(DataValidationError, item.deserialize, {})
+
+    def test_deserialize_item_type_error(self):
+        """It should not Deserialize an Item with a TypeError"""
+        item = Item()
+        self.assertRaises(DataValidationError, item.deserialize, [])
