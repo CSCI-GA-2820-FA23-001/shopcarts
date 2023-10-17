@@ -8,9 +8,6 @@ GET /shopcarts/{id} - Returns the Shopcart with a given id number
 from flask import jsonify, request, url_for, abort, make_response, render_template
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
-from flask import jsonify, request, url_for, abort, make_response
-from service.common import status
-import json
 from jinja2.exceptions import TemplateNotFound
 
 # Import Flask application

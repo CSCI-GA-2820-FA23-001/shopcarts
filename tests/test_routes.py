@@ -9,11 +9,10 @@ import os
 import logging
 from unittest import TestCase
 from service import app
-from service.models import db, Shopcart, init_db, Item, DataValidationError
+from service.models import db, Shopcart, init_db, Item
 from service.common import status  # HTTP Status Codes
 from tests.factories import ShopcartFactory, ItemFactory
 from service.routes import read_item, update_item, delete_items, update_shopcart
-from service.common import status
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
