@@ -1,13 +1,14 @@
-# NYU DevOps Project Template
+# Shopcarts Service
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/Language-Python-blue.svg)](https://python.org/)
 
-This is a skeleton you can use to start your projects
 
 ## Overview
 
-This project template contains starter code for your class project. The `/service` folder contains your `models.py` file for your model and a `routes.py` file for your service. The `/tests` folder has test case starter code for testing the model and the service separately. All you need to do is add your functionality. You can use the [lab-flask-tdd](https://github.com/nyu-devops/lab-flask-tdd) for code examples to copy from.
+This repository contains code for the Customer shopcart for an e-commerce web site. This shows how to create a REST API with subordinate resources like shopcarts that have items:
+
+Note: This repo has a both a .devcontainer folder and a Vagrantfile for two ways to bring up a development environment.
 
 ## Automatic Setup
 
@@ -53,6 +54,28 @@ tests/              - test cases package
 ├── __init__.py     - package initializer
 ├── test_models.py  - test suite for business models
 └── test_routes.py  - test suite for service routes
+└── factories.py    - test factory to make fake objects for testing
+```
+
+## Information about this repo
+These are the RESTful routes for `shopcarts` and `items`
+```
+Endpoint            Methods  Rule
+----------------    -------  -----------------------------------------------------
+index               GET      /
+indexSecond         GET      /index/<idxName> 
+
+list_shopcarts      GET      /shopcarts
+create_shopcarts    POST     /shopcarts
+get_shopcarts       GET      /shopcarts/<int:shopcart_id> 
+delete_shopcart     DELETE   /shopcarts/<int:shopcart_id> 
+
+list_items          GET      /shopcarts/<int:shopcart_id>/items   
+create_items        POST     /shopcarts/<int:old_cart_id>/items
+read_item           GET      /shopcarts/<int:cart_id>/items/<int:item_id> 
+update_item         PUT      /shopcarts/<int:cart_id>/items/<int:item_id>  
+delete_items        DELETE   /shopcarts/<int:shopcart_id>/items/<int:item_id>
+delete_all_items    DELETE   /shopcarts/<int:shopcart_id>/items  
 ```
 
 ## License
