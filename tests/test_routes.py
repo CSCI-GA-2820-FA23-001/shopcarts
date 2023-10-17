@@ -11,8 +11,9 @@ from unittest import TestCase
 from service import app
 from service.models import db, Shopcart, init_db, Item
 from service.common import status  # HTTP Status Codes
-from tests.factories import ShopcartFactory, ItemFactory
 from service.routes import read_item, update_item, delete_items, update_shopcart
+from tests.factories import ShopcartFactory, ItemFactory
+
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -351,6 +352,7 @@ class TestShopcartServer(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_update_item_invalid_data(self):
+        """It should not update a item with invalid data"""
         # create sample cart and item
         test_shopcart = self._create_shopcarts(1)[0]
         test_item = self._create_items(1, test_shopcart.id)[0]
@@ -380,6 +382,7 @@ class TestShopcartServer(TestCase):
         self.assertIn("Invalid Item: missing shopcart_id", data["message"])
 
     def test_update_item_non_json_data(self):
+        """It should not update a item with non-json data"""
         test_shopcart = self._create_shopcarts(1)[0]
         test_item = self._create_items(1, test_shopcart.id)[0]
         response = self.client.post(
