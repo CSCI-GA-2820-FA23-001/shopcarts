@@ -71,7 +71,7 @@ class TestShopcartServer(TestCase):
         return shopcarts
 
     def _create_items(self, count, shop_cart_id):
-        """Factory method to create shopcarts in bulk"""
+        """Factory method to create items in bulk"""
         items = []
         for _ in range(count):
             test_item = ItemFactory(shopcart_id=shop_cart_id)
@@ -138,6 +138,44 @@ class TestShopcartServer(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_item = response.get_json()
         self.assertEqual(updated_item["name"], "updated_name")
+
+    def test_create_item(self):
+        """It should create an Item"""
+        # create a pet to update
+        test_shopcart = self._create_shopcarts(1)[0]
+        test_item = ItemFactory(shopcart_id=test_shopcart.id)
+        response = self.client.post(
+            f"{BASE_URL}/{test_shopcart.id}/items", json=test_item.serialize()
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_delete_item(self):
+        """It should Delete an Item"""
+        # create a pet to update
+        test_shopcart = self._create_shopcarts(1)[0]
+        test_item = ItemFactory(shopcart_id=test_shopcart.id)
+        response = self.client.post(
+            f"{BASE_URL}/{test_shopcart.id}/items", json=test_item.serialize()
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = response.get_json()
+        logging.debug(data)
+        item_id = data["id"]
+
+        # send delete request
+        resp = self.client.delete(
+            f"{BASE_URL}/{test_shopcart.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        # retrieve it back and make sure item is not there
+        resp = self.client.get(
+            f"{BASE_URL}/{test_shopcart.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_shopcart(self):
         """It should Create a new Shopcart"""
@@ -278,3 +316,33 @@ class TestShopcartServer(TestCase):
             "Invalid Item: body of request contained bad or no data string indices must be integers, not 'str'",
             data["message"],
         )
+
+    def test_list_shopcarts(self):
+        """It should List all shopcarts"""
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self._create_shopcarts(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
+
+    def test_get_item_list(self):
+        """It should Get a list of Items"""
+        test_shopcart = self._create_shopcarts(1)[0]
+        self._create_items(5, test_shopcart.id)
+
+        response = self.client.get(f"{BASE_URL}/{test_shopcart.id}/items")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
+
+    def test_get_item_list_not_found(self):
+        """It should not Get a list of Items thats not Found"""
+
+        response = self.client.get(f"{BASE_URL}/0/items")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
