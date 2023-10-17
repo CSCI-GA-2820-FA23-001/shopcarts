@@ -158,7 +158,7 @@ class TestShopcartServer(TestCase):
 
     def test_create_item(self):
         """It should create an Item"""
-        # create a pet to update
+        # create a item to update
         test_shopcart = self._create_shopcarts(1)[0]
         test_item = ItemFactory(shopcart_id=test_shopcart.id)
         response = self.client.post(
@@ -168,7 +168,7 @@ class TestShopcartServer(TestCase):
 
     def test_delete_item(self):
         """It should Delete an Item"""
-        # create a pet to update
+        # create a item to update
         test_shopcart = self._create_shopcarts(1)[0]
         test_item = ItemFactory(shopcart_id=test_shopcart.id)
         response = self.client.post(
@@ -234,14 +234,6 @@ class TestShopcartServer(TestCase):
             data["total_price"], test_shopcart.total_price, "Total price does not match"
         )
 
-    def test_get_shopcart_not_found(self):
-        """It should not Get a Shopcart thats not found"""
-        response = self.client.get(f"{BASE_URL}/0")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        data = response.get_json()
-        logging.debug("Response data = %s", data)
-        self.assertIn("was not found", data["message"])
-
     def test_delete_shopcart(self):
         """It should Delete a Shopcart"""
         shopcart = self._create_shopcarts(1)[0]
@@ -254,6 +246,7 @@ class TestShopcartServer(TestCase):
         self._create_items(5, shopcart.id)
         response = self.client.delete(f"{BASE_URL}/{shopcart.id}/items")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
     ######################################################################
     #  T E S T   S A D   P A T H S
     ######################################################################
@@ -301,6 +294,14 @@ class TestShopcartServer(TestCase):
         self.assertEqual(response.status_code, 404)
         data = response.get_json()
         self.assertIn("Item with id '999' was not found.", data["message"])
+
+    def test_get_shopcart_not_found(self):
+        """It should not Get a Shopcart thats not found"""
+        response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
 
     def test_read_item_invalid_para(self):
         """test if ValueError raised for bad input"""
