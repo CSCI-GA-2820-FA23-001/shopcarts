@@ -5,9 +5,12 @@ Describe what your service does here
 GET /shopcarts/{id} - Returns the Shopcart with a given id number
 """
 
+from flask import jsonify, request, url_for, abort, make_response
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
 from flask import jsonify, request, url_for, abort, make_response
+from service.common import status
+import json
 
 # Import Flask application
 from . import app
@@ -29,9 +32,13 @@ def index():
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 
+
 # Place your REST API code here ...
 
 
+######################################################################
+# ADD AN ITEM TO A SHOPCART
+######################################################################
 @app.route("/shopcarts/<int:old_cart_id>/items", methods=["POST"])
 def create_items(old_cart_id):
     """
@@ -57,6 +64,39 @@ def create_items(old_cart_id):
 
 
 ######################################################################
+# DELETE AN ITEM
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>/items/<int:item_id>", methods=["DELETE"])
+def delete_items(shopcart_id, item_id):
+    """
+    Delete an Item
+
+    This endpoint will delete an Item based the id specified in the path
+    """
+    app.logger.info(
+        "Request to delete Item %s for ShopCart id: %s", item_id, shopcart_id
+    )
+    check_content_type("application/json")
+    if not isinstance(item_id, int):
+        raise TypeError("item_id should be int")
+
+    cart = Shopcart.find(shopcart_id)
+    if not cart:
+        abort(status.HTTP_404_NOT_FOUND, f"Cart with id '{shopcart_id}' was not found.")
+
+    # See if the item exists and delete it if it does
+    item = Item.find(item_id)
+    if item:
+        item.delete()
+    else:
+        abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
+
+    app.logger.info("Item with ID [%s] deleted.", item.id)
+
+    return make_response("", status.HTTP_200_OK)
+
+
+######################################################################
 # UPDATE AN EXISTING ITEM
 ######################################################################
 @app.route("/shopcarts/<int:cart_id>/items/<int:item_id>", methods=["PUT"])
@@ -68,8 +108,9 @@ def update_item(cart_id, item_id):
     """
     app.logger.info("Request to update item with id: %s", item_id)
     check_content_type("application/json")
-    if type(item_id) != int:
+    if not isinstance(item_id, int):
         raise TypeError("item_id should be int")
+    check_content_type("application/json")
 
     cart = Shopcart.find(cart_id)
     if not cart:
@@ -78,6 +119,7 @@ def update_item(cart_id, item_id):
 
     if not item:
         abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
+
     item.deserialize(request.get_json())
 
     item.id = item_id
@@ -99,8 +141,10 @@ def read_item(cart_id, item_id):
     """
 
     app.logger.info("Request for item with id: %s", item_id)
+    if not isinstance(cart_id, int):
+        raise TypeError("cart_id should be int")
 
-    if type(item_id) != int:
+    if not isinstance(item_id, int):
         raise TypeError("item_id should be int")
     cart = Shopcart.find(cart_id)
     if not cart:
@@ -117,8 +161,6 @@ def read_item(cart_id, item_id):
 ######################################################################
 # CREATE A NEW SHOPCART
 ######################################################################
-
-
 @app.route("/shopcarts", methods=["POST"])
 def create_shopcarts():
     """
@@ -204,3 +246,50 @@ def delete_all_items(shopcart_id):
         for item in shopcart.items:
             item.delete()
     return make_response("", status.HTTP_204_NO_CONTENT)
+
+######################################################################
+# LIST ITEMS IN A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>/items", methods=["GET"])
+def list_items(shopcart_id):
+    """
+    Return all of the items in a Shopcart
+
+    This endpoint will return a list of items based on shopcart's id
+    """
+    app.logger.info("Request for item list of the shopcart with id: %s", shopcart_id)
+
+    if not isinstance(shopcart_id, int):
+        raise ValueError("shopcart_id must be an integer while list items of shopcart")
+    shopcart = Shopcart.find(shopcart_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Item list for Shopcart with id '{shopcart_id}' was not found.",
+        )
+    items = shopcart.items
+    results = [item.serialize() for item in items]
+
+    app.logger.info("Returning item list with shopcart_id: %s", shopcart.id)
+    return jsonify(results), status.HTTP_200_OK
+
+
+######################################################################
+# List all shopcarts
+######################################################################
+
+
+@app.route("/shopcarts", methods=["GET"])
+def list_shopcarts():
+    """Return all the shopcarts"""
+    app.logger.info("Request for shopcarts list")
+    shopcarts = []
+
+    shopcarts = Shopcart.all()
+    if not shopcarts:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            "No shopcart found",
+        )
+    results = [shopcart.serialize() for shopcart in shopcarts]
+    return make_response(jsonify(results), status.HTTP_200_OK)
