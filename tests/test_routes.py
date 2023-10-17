@@ -9,9 +9,11 @@ import os
 import logging
 from unittest import TestCase
 from service import app
-from service.models import db, Shopcart, init_db, Item
+from service.models import db, Shopcart, init_db, Item, DataValidationError
 from service.common import status  # HTTP Status Codes
 from tests.factories import ShopcartFactory, ItemFactory
+from service.routes import read_item, update_item
+from service.common import status
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -222,6 +224,98 @@ class TestShopcartServer(TestCase):
         data = response.get_json()
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
+
+    ######################################################################
+    #  T E S T   S A D   P A T H S
+    ######################################################################
+
+    def test_update_item_not_found(self):
+        """test if not found error raise"""
+        test_shopcart = self._create_shopcarts(1)[0]
+        test_item = ItemFactory(shopcart_id=test_shopcart.id)
+        response = self.client.post(
+            f"{BASE_URL}/{test_shopcart.id}/items", json=test_item.serialize()
+        )
+
+        # update the item
+        new_item = response.get_json()
+        logging.debug(new_item)
+        new_item["name"] = "updated_name"
+
+        # not found the cart of item
+        response = self.client.put(f"{BASE_URL}/{999}/items/{0}", json=new_item)
+        self.assertEqual(response.status_code, 404)
+        data = response.get_json()
+        self.assertIn("Cart with id '999' was not found.", data["message"])
+
+        # not found the item
+        response = self.client.put(
+            f"{BASE_URL}/{test_shopcart.id}/items/{9999}", json=new_item
+        )
+        self.assertEqual(response.status_code, 404)
+        data = response.get_json()
+        self.assertIn("Item with id '9999' was not found.", data["message"])
+
+    def test_read_item_not_found(self):
+        """test if not found error raise"""
+
+        # not found the cart of item
+        response = self.client.get(f"{BASE_URL}/{9999}/items/{0}")
+        self.assertEqual(response.status_code, 404)
+        data = response.get_json()
+        self.assertIn("Cart with id '9999' was not found.", data["message"])
+
+        # not found the item
+        test_shopcart = self._create_shopcarts(1)[0]
+        # test_item = self._create_items(1, test_shopcart.id)[0]
+        response = self.client.get(f"{BASE_URL}/{test_shopcart.id}/items/{999}")
+        self.assertEqual(response.status_code, 404)
+        data = response.get_json()
+        self.assertIn("Item with id '999' was not found.", data["message"])
+
+    def test_read_item_invalid_para(self):
+        """test if ValueError raised for bad input"""
+
+        self.assertRaises(TypeError, read_item, cart_id="abc", item_id="bcc")
+
+    def test_update_item_invalid_para(self):
+        """test if ValueError raised for bad input"""
+        self.assertRaises(TypeError, update_item, cart_id="abc", item_id="bcc")
+
+    def test_update_item_invalid_data(self):
+        # create sample cart and item
+        test_shopcart = self._create_shopcarts(1)[0]
+        test_item = self._create_items(1, test_shopcart.id)[0]
+        response = self.client.post(
+            f"{BASE_URL}/{test_shopcart.id}/items", json=test_item.serialize()
+        )
+        new_item = response.get_json()
+
+        # can not accept no shopcart_id
+        del new_item["shopcart_id"]
+        response = self.client.put(
+            f"{BASE_URL}/{test_shopcart.id}/items/{test_item.id}", json=new_item
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        data = response.get_json()
+        self.assertIn("Invalid Item: missing shopcart_id", data["message"])
+
+    def test_update_item_non_json_data(self):
+        test_shopcart = self._create_shopcarts(1)[0]
+        test_item = self._create_items(1, test_shopcart.id)[0]
+        response = self.client.post(
+            f"{BASE_URL}/{test_shopcart.id}/items", json=test_item.serialize()
+        )
+
+        response = self.client.put(
+            f"{BASE_URL}/{test_shopcart.id}/items/{test_item.id}", json="abc"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        data = response.get_json()
+        self.assertIn(
+            "Invalid Item: body of request contained bad or no data string indices must be integers, not 'str'",
+            data["message"],
+        )
 
     def test_list_shopcarts(self):
         """It should List all shopcarts"""

@@ -7,6 +7,9 @@ import logging
 from abc import abstractmethod
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from flask import abort
+from service.common import status
+
 
 logger = logging.getLogger("flask.app")
 
@@ -210,6 +213,7 @@ class Item(db.Model, PersistentBase):
             raise DataValidationError(
                 "Invalid Item: missing " + error.args[0]
             ) from error
+
         except TypeError as error:
             raise DataValidationError(
                 "Invalid Item: body of request contained "
