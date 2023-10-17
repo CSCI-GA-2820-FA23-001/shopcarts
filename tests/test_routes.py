@@ -12,7 +12,7 @@ from service import app
 from service.models import db, Shopcart, init_db, Item, DataValidationError
 from service.common import status  # HTTP Status Codes
 from tests.factories import ShopcartFactory, ItemFactory
-from service.routes import read_item, update_item, delete_items
+from service.routes import read_item, update_item, delete_items, update_shopcart
 from service.common import status
 
 DATABASE_URI = os.getenv(
@@ -234,6 +234,28 @@ class TestShopcartServer(TestCase):
             data["total_price"], test_shopcart.total_price, "Total price does not match"
         )
 
+    def test_update_shopcart(self):
+        """
+        Update a shopcart
+
+        This endpoint will update a shopcart based on the body that is posted
+        """
+
+        # create a shopcart to update
+        test_shopcart = self._create_shopcarts(1)[0]
+        response = self.client.post(BASE_URL, json=test_shopcart.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # update the shopcart
+        new_shopcart = response.get_json()
+        logging.debug(new_shopcart)
+        new_shopcart["total_price"] = 99.99
+        # a new_shopcart post wait for complete
+        response = self.client.put(f"{BASE_URL}/{test_shopcart.id}", json=new_shopcart)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_shopcart = response.get_json()
+        self.assertEqual(updated_shopcart["total_price"], 99.99)
+
     def test_delete_shopcart(self):
         """It should Delete a Shopcart"""
         shopcart = self._create_shopcarts(1)[0]
@@ -314,8 +336,20 @@ class TestShopcartServer(TestCase):
         self.assertRaises(TypeError, delete_items, shopcart_id=0, item_id="bcc")
 
     def test_update_item_invalid_para(self):
-        """test if ValueError raised for bad input"""
+        """test if ValueError raised for bad input when updating item"""
         self.assertRaises(TypeError, update_item, cart_id="abc", item_id="bcc")
+
+    def test_update_shopcart_invalid_para(self):
+        """test if ValueError raised for bad input when updating shopcart"""
+        self.assertRaises(TypeError, update_shopcart, shopcart_id="abc")
+
+    def test_update_shopcart_not_found(self):
+        """test if error aborted for shopcart not exist when updating shopcart"""
+        test_shopcart = self._create_shopcarts(1)[0]
+
+        # not found the shopcart
+        response = self.client.put(f"{BASE_URL}/0", json=test_shopcart.serialize())
+        self.assertEqual(response.status_code, 404)
 
     def test_update_item_invalid_data(self):
         # create sample cart and item
