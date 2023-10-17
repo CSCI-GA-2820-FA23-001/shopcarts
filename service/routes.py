@@ -6,9 +6,10 @@ GET /shopcarts/{id} - Returns the Shopcart with a given id number
 """
 
 from flask import jsonify, request, url_for, abort, make_response, render_template
+from jinja2.exceptions import TemplateNotFound
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
-from jinja2.exceptions import TemplateNotFound
+
 
 # Import Flask application
 from . import app
@@ -27,14 +28,14 @@ def index():
 
 
 @app.route("/index/<idxName>")
-def indexSecond(idxName):
+def index_sub(idx_name):
     """Root URL response"""
     try:
-        render_template(idxName)
+        render_template(idx_name)
     except TemplateNotFound:
         abort(
             status.HTTP_500_INTERNAL_SERVER_ERROR,
-            f"Index name '{idxName}' was not found.",
+            f"Index name '{idx_name}' was not found.",
         )
 
     return (
