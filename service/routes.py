@@ -240,6 +240,32 @@ def get_shopcarts(shopcart_id):
 
 
 ######################################################################
+# DELETE A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>", methods=["DELETE"])
+def delete_shopcart(shopcart_id):
+    """Delete a shopcart with ID"""
+    app.logger.info("Request for Deleting a shopcart with id : %s", shopcart_id)
+    shopcart = Shopcart.find(shopcart_id)
+    if shopcart:
+        shopcart.delete()
+    return make_response("", status.HTTP_204_NO_CONTENT)
+
+
+######################################################################
+# DELETE ALL ITEMS IN A SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>/items", methods=["DELETE"])
+def delete_all_items(shopcart_id):
+    """Delete all items in a shopcart"""
+    app.logger.info("Request for Deleting all items in shopcart with id : %s", shopcart_id)
+    shopcart = Shopcart.find(shopcart_id)
+    if shopcart:
+        for item in shopcart.items:
+            item.delete()
+    return make_response("", status.HTTP_204_NO_CONTENT)
+
+######################################################################
 # LIST ITEMS IN A SHOPCART
 ######################################################################
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["GET"])

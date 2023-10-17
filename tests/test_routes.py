@@ -242,6 +242,18 @@ class TestShopcartServer(TestCase):
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
 
+    def test_delete_shopcart(self):
+        """It should Delete a Shopcart"""
+        shopcart = self._create_shopcarts(1)[0]
+        response = self.client.delete(f"{BASE_URL}/{shopcart.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_clear_shopcart(self):
+        """It should Clear a Shopcart"""
+        shopcart = self._create_shopcarts(1)[0]
+        self._create_items(5, shopcart.id)
+        response = self.client.delete(f"{BASE_URL}/{shopcart.id}/items")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
     ######################################################################
     #  T E S T   S A D   P A T H S
     ######################################################################
