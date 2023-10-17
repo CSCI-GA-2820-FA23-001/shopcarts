@@ -5,7 +5,6 @@ Test cases for YourResourceModel Model
 import os
 import logging
 import unittest
-from datetime import datetime
 from service import app
 from service.models import Shopcart, Item, db, DataValidationError
 from tests.factories import ShopcartFactory, ItemFactory
@@ -229,11 +228,11 @@ class TestItems(unittest.TestCase):
     def test_deserialize_item_key_error(self):
         """It should not Deserialize an Item with a KeyError"""
         fake_shopcart = ShopcartFactory()
-        sample_item = ItemFactory()
+        sample_item = ItemFactory(shopcart_id=fake_shopcart.id)
         self.assertRaises(DataValidationError, sample_item.deserialize, {})
 
     def test_deserialize_item_type_error(self):
         """It should not Deserialize an Item with a TypeError"""
         fake_shopcart = ShopcartFactory()
-        sample_item = ItemFactory()
+        sample_item = ItemFactory(shopcart_id=fake_shopcart.id)
         self.assertRaises(DataValidationError, sample_item.deserialize, [])

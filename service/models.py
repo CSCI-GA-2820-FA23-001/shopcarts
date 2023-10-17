@@ -7,8 +7,6 @@ import logging
 from abc import abstractmethod
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from flask import abort
-from service.common import status
 
 
 logger = logging.getLogger("flask.app")
