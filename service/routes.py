@@ -5,12 +5,13 @@ Describe what your service does here
 GET /shopcarts/{id} - Returns the Shopcart with a given id number
 """
 
-from flask import jsonify, request, url_for, abort, make_response
+from flask import jsonify, request, url_for, abort, make_response, render_template
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
 from flask import jsonify, request, url_for, abort, make_response
 from service.common import status
 import json
+from jinja2.exceptions import TemplateNotFound
 
 # Import Flask application
 from . import app
@@ -24,6 +25,23 @@ def index():
     """Root URL response"""
     return (
         "Reminder: return some useful information in json format about the service here",
+        status.HTTP_200_OK,
+    )
+
+
+@app.route("/index/<idxName>")
+def indexSecond(idxName):
+    """Root URL response"""
+    try:
+        render_template(idxName)
+    except TemplateNotFound:
+        abort(
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+            f"Index name '{idxName}' was not found.",
+        )
+
+    return (
+        "index found",
         status.HTTP_200_OK,
     )
 
@@ -76,9 +94,9 @@ def delete_items(shopcart_id, item_id):
     app.logger.info(
         "Request to delete Item %s for ShopCart id: %s", item_id, shopcart_id
     )
-    check_content_type("application/json")
     if not isinstance(item_id, int):
         raise TypeError("item_id should be int")
+    check_content_type("application/json")
 
     cart = Shopcart.find(shopcart_id)
     if not cart:
