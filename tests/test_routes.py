@@ -12,7 +12,7 @@ from service import app
 from service.models import db, Shopcart, init_db, Item, DataValidationError
 from service.common import status  # HTTP Status Codes
 from tests.factories import ShopcartFactory, ItemFactory
-from service.routes import read_item, update_item
+from service.routes import read_item, update_item, delete_items
 from service.common import status
 
 DATABASE_URI = os.getenv(
@@ -96,6 +96,23 @@ class TestShopcartServer(TestCase):
         """It should call the home page"""
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        # sub home page
+        idx = "index.html"
+        resp = self.client.get(f"/index/{idx}")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    def test_index_not_found(self):
+        """It should not found sub home page"""
+
+        wrong_idx = "idx.html"
+        resp = self.client.get(f"/index/{wrong_idx}")
+        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        data = resp.get_json()
+        self.assertIn(
+            f"Index name '{wrong_idx}' was not found.",
+            data["message"],
+        )
 
     def test_read_item(self):
         """Get a Item"""
@@ -278,6 +295,11 @@ class TestShopcartServer(TestCase):
 
         self.assertRaises(TypeError, read_item, cart_id="abc", item_id="bcc")
 
+    def test_delete_items_invalid_para(self):
+        """test if ValueError raised for bad input"""
+
+        self.assertRaises(TypeError, delete_items, shopcart_id=0, item_id="bcc")
+
     def test_update_item_invalid_para(self):
         """test if ValueError raised for bad input"""
         self.assertRaises(TypeError, update_item, cart_id="abc", item_id="bcc")
@@ -290,6 +312,17 @@ class TestShopcartServer(TestCase):
             f"{BASE_URL}/{test_shopcart.id}/items", json=test_item.serialize()
         )
         new_item = response.get_json()
+
+        # not provide a json for item serilize
+        response = self.client.put(
+            f"{BASE_URL}/{test_shopcart.id}/items/{test_item.id}", json="abc"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        data = response.get_json()
+        self.assertIn(
+            "Invalid Item: body of request contained bad or no data string indices must be integers, not 'str'",
+            data["message"],
+        )
 
         # can not accept no shopcart_id
         del new_item["shopcart_id"]
@@ -308,12 +341,14 @@ class TestShopcartServer(TestCase):
         )
 
         response = self.client.put(
-            f"{BASE_URL}/{test_shopcart.id}/items/{test_item.id}", json="abc"
+            f"{BASE_URL}/{test_shopcart.id}/items/{test_item.id}",
+            content_type="application/css",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
         data = response.get_json()
         self.assertIn(
-            "Invalid Item: body of request contained bad or no data string indices must be integers, not 'str'",
+            "Content-Type must be application/json",
             data["message"],
         )
 
