@@ -69,7 +69,7 @@ class TestShopcartServer(TestCase):
         return shopcarts
 
     def _create_items(self, count, shop_cart_id):
-        """Factory method to create shopcarts in bulk"""
+        """Factory method to create items in bulk"""
         items = []
         for _ in range(count):
             test_item = ItemFactory(shopcart_id=shop_cart_id)
@@ -226,9 +226,29 @@ class TestShopcartServer(TestCase):
     def test_list_shopcarts(self):
         """It should List all shopcarts"""
         response = self.client.get(BASE_URL)
-        self.assertEqual(response.status_code,status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self._create_shopcarts(5)
         response = self.client.get(BASE_URL)
-        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
-        self.assertEqual(len(data),5)
+        self.assertEqual(len(data), 5)
+
+    def test_get_item_list(self):
+        """It should Get a list of Items"""
+        test_shopcart = self._create_shopcarts(1)[0]
+        self._create_items(5, test_shopcart.id)
+
+        response = self.client.get(f"{BASE_URL}/{test_shopcart.id}/items")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
+
+    def test_get_item_list_not_found(self):
+        """It should not Get a list of Items thats not Found"""
+
+        response = self.client.get(f"{BASE_URL}/0/items")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        data = response.get_json()
+        logging.debug("Response data = %s", data)
+        self.assertIn("was not found", data["message"])
