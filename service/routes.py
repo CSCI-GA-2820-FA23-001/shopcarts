@@ -115,6 +115,38 @@ def delete_items(shopcart_id, item_id):
 
 
 ######################################################################
+# UPDATE AN EXISTING SHOPCART
+######################################################################
+@app.route("/shopcarts/<int:shopcart_id>", methods=["PUT"])
+def update_shopcart(shopcart_id):
+    """
+    Update a Shopcart
+
+    This endpoint will update a Shopcart based the id that is posted
+    """
+    app.logger.info("Request to update shopcart with id: %s", shopcart_id)
+    if not isinstance(shopcart_id, int):
+        raise TypeError("shopcart_id should be int when update a shopcart")
+
+    check_content_type("application/json")
+
+    shopcart = Shopcart.find(shopcart_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Cart with id '{shopcart_id}' was not found when updating it.",
+        )
+
+    shopcart.deserialize(request.get_json())
+
+    shopcart.id = shopcart_id
+    shopcart.update()
+
+    app.logger.info("Shopcart with ID [%s] updated.", shopcart.id)
+    return jsonify(shopcart.serialize()), status.HTTP_200_OK
+
+
+######################################################################
 # UPDATE AN EXISTING ITEM
 ######################################################################
 @app.route("/shopcarts/<int:cart_id>/items/<int:item_id>", methods=["PUT"])
@@ -258,12 +290,15 @@ def delete_shopcart(shopcart_id):
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["DELETE"])
 def delete_all_items(shopcart_id):
     """Delete all items in a shopcart"""
-    app.logger.info("Request for Deleting all items in shopcart with id : %s", shopcart_id)
+    app.logger.info(
+        "Request for Deleting all items in shopcart with id : %s", shopcart_id
+    )
     shopcart = Shopcart.find(shopcart_id)
     if shopcart:
         for item in shopcart.items:
             item.delete()
     return make_response("", status.HTTP_204_NO_CONTENT)
+
 
 ######################################################################
 # LIST ITEMS IN A SHOPCART
