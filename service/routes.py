@@ -8,6 +8,8 @@ GET /shopcarts/{id} - Returns the Shopcart with a given id number
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
 from flask import jsonify, request, url_for, abort, make_response
+from service.common import status
+import json
 
 # Import Flask application
 from . import app
@@ -67,9 +69,9 @@ def update_item(cart_id, item_id):
     This endpoint will update a Item based the id that is posted
     """
     app.logger.info("Request to update item with id: %s", item_id)
-    check_content_type("application/json")
     if type(item_id) != int:
         raise TypeError("item_id should be int")
+    check_content_type("application/json")
 
     cart = Shopcart.find(cart_id)
     if not cart:
@@ -78,6 +80,7 @@ def update_item(cart_id, item_id):
 
     if not item:
         abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
+
     item.deserialize(request.get_json())
 
     item.id = item_id
