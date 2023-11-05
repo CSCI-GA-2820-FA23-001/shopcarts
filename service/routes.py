@@ -96,20 +96,14 @@ def delete_items(shopcart_id, item_id):
         raise TypeError("item_id should be int")
     check_content_type("application/json")
 
-    cart = Shopcart.find(shopcart_id)
-    if not cart:
-        abort(status.HTTP_404_NOT_FOUND, f"Cart with id '{shopcart_id}' was not found.")
-
     # See if the item exists and delete it if it does
     item = Item.find(item_id)
     if item:
         item.delete()
-    else:
-        abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
 
     app.logger.info("Item with ID [%s] deleted.", item.id)
 
-    return make_response("", status.HTTP_200_OK)
+    return make_response("", status.HTTP_204_NO_CONTENT)
 
 
 ######################################################################
