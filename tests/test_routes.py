@@ -185,7 +185,7 @@ class TestShopcartServer(TestCase):
             f"{BASE_URL}/{test_shopcart.id}/items/{item_id}",
             content_type="application/json",
         )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
         # retrieve it back and make sure item is not there
         resp = self.client.get(
