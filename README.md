@@ -93,7 +93,6 @@ These are the RESTful routes for `shopcarts` and `items`
 Endpoint            Methods  Rule
 ----------------    -------  -----------------------------------------------------
 index               GET      /
-indexSecond         GET      /index/<idxName> 
 
 list_shopcarts      GET      /shopcarts
 create_shopcarts    POST     /shopcarts
