@@ -99,13 +99,14 @@ create_shopcarts    POST     /shopcarts
 get_shopcarts       GET      /shopcarts/<int:shopcart_id> 
 update_shopcarts    PUT      /shopcarts/<int:shopcart_id> 
 delete_shopcart     DELETE   /shopcarts/<int:shopcart_id> 
+empty_shopcart      DELETE   /shopcarts/<int:shopcart_id>/items  
 
 list_items          GET      /shopcarts/<int:shopcart_id>/items   
 create_items        POST     /shopcarts/<int:old_cart_id>/items
 read_item           GET      /shopcarts/<int:cart_id>/items/<int:item_id> 
 update_item         PUT      /shopcarts/<int:cart_id>/items/<int:item_id>  
 delete_items        DELETE   /shopcarts/<int:shopcart_id>/items/<int:item_id>
-delete_all_items    DELETE   /shopcarts/<int:shopcart_id>/items  
+
 ```
 
 ## License

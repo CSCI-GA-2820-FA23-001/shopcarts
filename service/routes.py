@@ -267,14 +267,12 @@ def delete_shopcart(shopcart_id):
 
 
 ######################################################################
-# DELETE ALL ITEMS IN A SHOPCART
+# EMPTY SHOPCART
 ######################################################################
 @app.route("/shopcarts/<int:shopcart_id>/items", methods=["DELETE"])
-def delete_all_items(shopcart_id):
-    """Delete all items in a shopcart"""
-    app.logger.info(
-        "Request for Deleting all items in shopcart with id : %s", shopcart_id
-    )
+def empty_shopcart(shopcart_id):
+    """Empties shopcart"""
+    app.logger.info("Request for emptying shopcart with id : %s", shopcart_id)
     shopcart = Shopcart.find(shopcart_id)
     if shopcart:
         for item in shopcart.items:
