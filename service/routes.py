@@ -27,23 +27,6 @@ def index():
     )
 
 
-@app.route("/index/<idxName>")
-def index_sub(idx_name):
-    """Root URL response"""
-    try:
-        render_template(idx_name)
-    except TemplateNotFound:
-        abort(
-            status.HTTP_500_INTERNAL_SERVER_ERROR,
-            f"Index name '{idx_name}' was not found.",
-        )
-
-    return (
-        "index found",
-        status.HTTP_200_OK,
-    )
-
-
 ######################################################################
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
