@@ -27,23 +27,6 @@ def index():
     )
 
 
-@app.route("/index/<idxName>")
-def index_sub(idx_name):
-    """Root URL response"""
-    try:
-        render_template(idx_name)
-    except TemplateNotFound:
-        abort(
-            status.HTTP_500_INTERNAL_SERVER_ERROR,
-            f"Index name '{idx_name}' was not found.",
-        )
-
-    return (
-        "index found",
-        status.HTTP_200_OK,
-    )
-
-
 ######################################################################
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
@@ -63,20 +46,27 @@ def create_items(old_cart_id):
     """
     app.logger.info("Request to create an Item")
     check_content_type("application/json")
-    # Create the shopcart
 
-    newitem = Item()
-    newitem.deserialize(request.get_json())
-    newitem.create()
-    # Create a message to return
-    message = newitem.serialize()
-    location_url = url_for(
-        "read_item", cart_id=old_cart_id, item_id=newitem.id, _external=True
-    )
+    # See if the shopcart exists and abort if it doesn't
+    shopcart = Shopcart.find(old_cart_id)
+    if not shopcart:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Shopcart with id '{old_cart_id}' could not be found.",
+        )
 
-    return make_response(
-        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
-    )
+    # Create an item from the json data
+    item = Item()
+    item.deserialize(request.get_json())
+
+    # Append the item to the shopcart
+    shopcart.items.append(item)
+    shopcart.update()
+
+    # Prepare a message to return
+    message = item.serialize()
+
+    return make_response(jsonify(message), status.HTTP_201_CREATED)
 
 
 ######################################################################

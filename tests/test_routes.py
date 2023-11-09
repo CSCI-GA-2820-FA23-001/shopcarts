@@ -92,28 +92,6 @@ class TestShopcartServer(TestCase):
     #  S H O P C A R T  T E S T   C A S E S   H E R E
     ######################################################################
 
-    def test_index(self):
-        """It should call the home page"""
-        resp = self.client.get("/")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-
-        # sub home page
-        idx = "index.html"
-        resp = self.client.get(f"/index/{idx}")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-
-    def test_index_not_found(self):
-        """It should not found sub home page"""
-
-        wrong_idx = "idx.html"
-        resp = self.client.get(f"/index/{wrong_idx}")
-        self.assertEqual(resp.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-        data = resp.get_json()
-        self.assertIn(
-            f"Index name '{wrong_idx}' was not found.",
-            data["message"],
-        )
-
     def test_read_item(self):
         """Get a Item"""
         test_shopcart = self._create_shopcarts(1)[0]
