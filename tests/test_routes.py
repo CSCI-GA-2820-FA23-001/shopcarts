@@ -54,6 +54,13 @@ class TestShopcartServer(TestCase):
         """This runs after each test"""
         db.session.remove()
 
+    def test_index(self):
+        """It should call the home page"""
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data["name"], "Shopcarts REST API Service")
+
     def _create_shopcarts(self, count):
         """Factory method to create shopcarts in bulk"""
         shopcarts = []
