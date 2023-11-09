@@ -247,8 +247,8 @@ class TestShopcartServer(TestCase):
         response = self.client.delete(f"{BASE_URL}/{shopcart.id}")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_clear_shopcart(self):
-        """It should Clear a Shopcart"""
+    def test_empty_shopcart(self):
+        """It should Empty a Shopcart"""
         shopcart = self._create_shopcarts(1)[0]
         self._create_items(5, shopcart.id)
         response = self.client.delete(f"{BASE_URL}/{shopcart.id}/items")
