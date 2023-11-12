@@ -4,14 +4,14 @@ on:
     branches:
       - master
     paths-ignore:
-    - 'README.md'
+#    - 'README.md'
     - '.vscode/**'
 
   pull_request:
     branches:
       - master
     paths-ignore:
-    - 'README.md'
+#    - 'README.md'
     - '.vscode/**'
 
 jobs:
