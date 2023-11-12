@@ -5,8 +5,8 @@ Describe what your service does here
 GET /shopcarts/{id} - Returns the Shopcart with a given id number
 """
 
-from flask import jsonify, request, url_for, abort, make_response, render_template
-from jinja2.exceptions import TemplateNotFound
+from flask import jsonify, request, url_for, abort, make_response #, render_template
+# from jinja2.exceptions import TemplateNotFound
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
 
