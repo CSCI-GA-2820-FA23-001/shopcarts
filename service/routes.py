@@ -6,6 +6,7 @@ GET /shopcarts/{id} - Returns the Shopcart with a given id number
 """
 
 from flask import jsonify, request, url_for, abort, make_response
+
 # from jinja2.exceptions import TemplateNotFound
 from service.common import status  # HTTP Status Codes
 from service.models import Shopcart, Item
@@ -304,10 +305,28 @@ def list_items(shopcart_id):
             status.HTTP_404_NOT_FOUND,
             f"Item list for Shopcart with id '{shopcart_id}' was not found.",
         )
-    items = shopcart.items
-    results = [item.serialize() for item in items]
 
-    app.logger.info("Returning item list with shopcart_id: %s", shopcart.id)
+    # Get filters from query parameters
+    price_filter = request.args.get("price")
+    name_filter = request.args.get("name")
+
+    # Apply filters to the items
+    filtered_items = shopcart.items
+
+    if price_filter is not None:
+        filtered_items = [
+            item for item in filtered_items if item.price == float(price_filter)
+        ]
+
+    if name_filter is not None:
+        filtered_items = [
+            item for item in filtered_items if name_filter.lower() in item.name.lower()
+        ]
+
+    # Serialize the filtered items
+    results = [item.serialize() for item in filtered_items]
+
+    app.logger.info("Returning filtered item list with shopcart_id: %s", shopcart.id)
     return jsonify(results), status.HTTP_200_OK
 
 
