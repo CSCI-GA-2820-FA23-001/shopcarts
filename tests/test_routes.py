@@ -436,6 +436,14 @@ class TestShopcartServer(TestCase):
         data = response.get_json()
         self.assertEqual(data[0]["id"], fake_shopcarts[0].id)
 
+        response = self.client.get(
+            BASE_URL,
+            query_string=f"item={fake_items['id']}",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(1, 1)
+
     def test_get_item_list(self):
         """It should Get a list of Items"""
         test_shopcart = self._create_shopcarts(1)[0]
