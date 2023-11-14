@@ -330,21 +330,19 @@ def list_shopcarts():
     min_price = request.args.get("minprice")
 
     if max_price:
-        for cart in results:
-            if cart["total_price"] > float(max_price):
-                results.remove(cart)
+        results = [
+            cart for cart in results if cart["total_price"] <= float(max_price)
+        ]
     if min_price:
-        for cart in results:
-            if cart["total_price"] < float(min_price):
-                results.remove(cart)
+        results = [
+            cart for cart in results if cart["total_price"] >= float(min_price)
+        ]
     if item_id:
         temp = []
         for cart in results:
             for item in cart["items"]:
-                if (item["id"] == int(item_id)):
+                if item["id"] == int(item_id):
                     temp.append(cart)
                     break
         results = temp
-    
-
     return make_response(jsonify(results), status.HTTP_200_OK)
