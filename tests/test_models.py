@@ -99,9 +99,11 @@ class TestShopcart(unittest.TestCase):
         serial_shopcart = shopcart.serialize()
         new_shopcart = Shopcart()
         new_shopcart.deserialize(serial_shopcart)
+
         self.assertEqual(new_shopcart.customer_id, shopcart.customer_id)
+        self.assertIsNone(new_shopcart.id, shopcart.id)
         self.assertEqual(new_shopcart.creation_time, shopcart.creation_time)
-        self.assertEqual(new_shopcart.last_updated_time, shopcart.last_updated_time)
+        self.assertNotEqual(new_shopcart.last_updated_time, shopcart.last_updated_time)
         self.assertEqual(new_shopcart.total_price, shopcart.total_price)
 
     def test_deserialize_shopcart_with_key_error(self):

@@ -113,17 +113,20 @@ class Shopcart(db.Model, PersistentBase):
         Args:
             data (dict): A dictionary containing the resource data
         """
+        print(data)
         try:
             self.customer_id = data["customer_id"]
-            self.creation_time = datetime.fromisoformat(data["creation_time"])
-            self.last_updated_time = datetime.fromisoformat(data["last_updated_time"])
-            self.total_price = data["total_price"]
+            # self.creation_time = datetime.fromisoformat(data["creation_time"])
+            self.last_updated_time = datetime.now()
+
             # handle inner list of items
             item_list = data.get("items")
             for json_item in item_list:
                 item = Item()
                 item.deserialize(json_item)
+                item.id = json_item["id"]
                 self.items.append(item)
+            self.total_price = self.get_total_price()
 
         except KeyError as error:
             raise DataValidationError(
@@ -202,7 +205,6 @@ class Item(db.Model, PersistentBase):
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.shopcart_id = data["shopcart_id"]
             self.name = data["name"]
             self.price = data["price"]
             self.description = data["description"]
