@@ -93,16 +93,22 @@ class TestShopcart(unittest.TestCase):
     def test_deserialize_an_shopcart(self):
         """It should Deserialize an shopcart"""
         shopcart = ShopcartFactory()
-        shopcart.items.append(ItemFactory())
+        item = ItemFactory()
         shopcart.create()
-        shopcart = shopcart.find(shopcart.id)
+        item.create()
+        shopcart.items.append(item)
+        shopcart.total_price = shopcart.get_total_price()
         serial_shopcart = shopcart.serialize()
         new_shopcart = Shopcart()
         new_shopcart.deserialize(serial_shopcart)
+
         self.assertEqual(new_shopcart.customer_id, shopcart.customer_id)
-        self.assertEqual(new_shopcart.creation_time, shopcart.creation_time)
-        self.assertEqual(new_shopcart.last_updated_time, shopcart.last_updated_time)
+        self.assertIsNone(new_shopcart.id, shopcart.id)
+        self.assertIsNone(new_shopcart.creation_time)
+        self.assertNotEqual(new_shopcart.last_updated_time, shopcart.last_updated_time)
         self.assertEqual(new_shopcart.total_price, shopcart.total_price)
+        for new, old in zip(new_shopcart.items, shopcart.items):
+            self.assertEqual(new.id, old.id)
 
     def test_deserialize_shopcart_with_key_error(self):
         """It should not Deserialize an shopcart with a KeyError"""

@@ -63,9 +63,9 @@ def create_items(old_cart_id):
     # Create an item from the json data
     item = Item()
     item.deserialize(request.get_json())
-
     # Append the item to the shopcart
     shopcart.items.append(item)
+    shopcart.total_price = shopcart.get_total_price()
     shopcart.update()
 
     # Prepare a message to return
@@ -91,12 +91,26 @@ def delete_items(shopcart_id, item_id):
         raise TypeError("item_id should be int")
     check_content_type("application/json")
 
+    shopcart = Shopcart.find(shopcart_id)
+    # if not shopcart:
+    #     abort(
+    #         status.HTTP_404_NOT_FOUND,
+    #         f"Shopcart with id '{shopcart_id}' could not be found.",
+    #     )
+
     # See if the item exists and delete it if it does
     item = Item.find(item_id)
+    # if not item:
+    #     abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
+
     if item:
+        shopcart.items.remove(item)
         item.delete()
 
-    app.logger.info("Item with ID [%s] deleted.", item.id)
+    shopcart.total_price = shopcart.get_total_price()
+    shopcart.update()
+
+    app.logger.info("Item with ID [%s] deleted.", item_id)
 
     return make_response("", status.HTTP_204_NO_CONTENT)
 
@@ -128,7 +142,6 @@ def update_shopcart(shopcart_id):
 
     shopcart.id = shopcart_id
     shopcart.update()
-
     app.logger.info("Shopcart with ID [%s] updated.", shopcart.id)
     return jsonify(shopcart.serialize()), status.HTTP_200_OK
 
@@ -161,7 +174,8 @@ def update_item(cart_id, item_id):
 
     item.id = item_id
     item.update()
-
+    cart.total_price = cart.get_total_price()
+    cart.update()
     app.logger.info("Item with ID [%s] updated.", item.id)
     return jsonify(item.serialize()), status.HTTP_200_OK
 
@@ -209,6 +223,7 @@ def create_shopcarts():
     # Create the shopcart
     shopcart = Shopcart()
     shopcart.deserialize(request.get_json())
+
     shopcart.create()
     # Create a message to return
     message = shopcart.serialize()
@@ -349,13 +364,9 @@ def list_shopcarts():
     min_price = request.args.get("minprice")
 
     if max_price:
-        results = [
-            cart for cart in results if cart["total_price"] <= float(max_price)
-        ]
+        results = [cart for cart in results if cart["total_price"] <= float(max_price)]
     if min_price:
-        results = [
-            cart for cart in results if cart["total_price"] >= float(min_price)
-        ]
+        results = [cart for cart in results if cart["total_price"] >= float(min_price)]
     if item_id:
         temp = []
         for cart in results:

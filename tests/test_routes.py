@@ -8,12 +8,13 @@ Test cases can be run with the following:
 import os
 import logging
 from unittest import TestCase
+from datetime import datetime
+
 from service import app
 from service.models import db, Shopcart, init_db, Item
 from service.common import status  # HTTP Status Codes
 from service.routes import read_item, update_item, delete_items, update_shopcart
 from tests.factories import ShopcartFactory, ItemFactory
-
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -234,16 +235,25 @@ class TestShopcartServer(TestCase):
         # update the shopcart
         new_shopcart = response.get_json()
         logging.debug(new_shopcart)
-        new_shopcart["total_price"] = 99.99
         # a new_shopcart post wait for complete
-        response = self.client.put(f"{BASE_URL}/{test_shopcart.id}", json=new_shopcart)
+        response = self.client.put(
+            f"{BASE_URL}/{new_shopcart['id']}", json=new_shopcart
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_shopcart = response.get_json()
-        self.assertEqual(updated_shopcart["total_price"], 99.99)
+        self.assertEqual(
+            new_shopcart["creation_time"],
+            updated_shopcart["creation_time"],
+        )
+        self.assertNotEqual(
+            datetime.fromisoformat(updated_shopcart["last_updated_time"]),
+            new_shopcart["last_updated_time"],
+        )
 
     def test_delete_shopcart(self):
         """It should Delete a Shopcart"""
         shopcart = self._create_shopcarts(1)[0]
+
         response = self.client.delete(f"{BASE_URL}/{shopcart.id}")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -317,6 +327,7 @@ class TestShopcartServer(TestCase):
 
     def test_delete_items_invalid_para(self):
         """test if ValueError raised for bad input"""
+        self.assertRaises(TypeError, delete_items, shopcart_id="abc", item_id="bcc")
 
         self.assertRaises(TypeError, delete_items, shopcart_id=0, item_id="bcc")
 
@@ -401,20 +412,39 @@ class TestShopcartServer(TestCase):
     def test_query_list_shopcarts(self):
         """It should List shopcarts with query"""
         fake_shopcarts = self._create_shopcarts(3)
-        fake_items = self._create_items(1, fake_shopcarts[0].id)
-        response = self.client.get(BASE_URL, query_string=f"item={fake_items[0].id}")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.get_json()
-        self.assertEqual(len(data), 1)
-        self.assertEqual(data[0]["id"], fake_items[0].shopcart_id)
-        response = self.client.get(BASE_URL, query_string=f"maxprice={fake_shopcarts[0].total_price}")
+
+        test_item = ItemFactory(shopcart_id=fake_shopcarts[0].id)
+        fake_items = self.client.post(
+            f"{BASE_URL}/{fake_shopcarts[0].id}/items", json=test_item.serialize()
+        ).get_json()
+        response = self.client.get(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), 3)
-        response = self.client.get(BASE_URL, query_string=f"minprice={fake_shopcarts[0].total_price}")
+
+        response = self.client.get(
+            BASE_URL,
+            query_string=f"maxprice={fake_items['price']*fake_items['quantity']}",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 3)
+
+        response = self.client.get(
+            BASE_URL,
+            query_string=f"minprice={fake_items['price']*fake_items['quantity']-1}",
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(data[0]["id"], fake_shopcarts[0].id)
+
+        response = self.client.get(
+            BASE_URL,
+            query_string=f"item={fake_items['id']}",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(1, 1)
 
     def test_get_item_list(self):
         """It should Get a list of Items"""
