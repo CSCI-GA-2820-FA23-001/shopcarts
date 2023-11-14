@@ -113,7 +113,6 @@ class Shopcart(db.Model, PersistentBase):
         Args:
             data (dict): A dictionary containing the resource data
         """
-        print(data)
         try:
             self.customer_id = data["customer_id"]
             # self.creation_time = datetime.fromisoformat(data["creation_time"])
@@ -205,6 +204,7 @@ class Item(db.Model, PersistentBase):
             data (dict): A dictionary containing the resource data
         """
         try:
+            self.shopcart_id = data["shopcart_id"]
             self.name = data["name"]
             self.price = data["price"]
             self.description = data["description"]
@@ -226,6 +226,6 @@ class Item(db.Model, PersistentBase):
         Creates an item to the database
         """
         logger.info("Creating a item")
-
+        self.id = None
         db.session.add(self)
         db.session.commit()

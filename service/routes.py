@@ -63,7 +63,6 @@ def create_items(old_cart_id):
     # Create an item from the json data
     item = Item()
     item.deserialize(request.get_json())
-    item.shopcart_id = old_cart_id
     # Append the item to the shopcart
     shopcart.items.append(item)
     shopcart.total_price = shopcart.get_total_price()
@@ -143,7 +142,6 @@ def update_shopcart(shopcart_id):
 
     shopcart.id = shopcart_id
     shopcart.update()
-
     app.logger.info("Shopcart with ID [%s] updated.", shopcart.id)
     return jsonify(shopcart.serialize()), status.HTTP_200_OK
 
@@ -220,7 +218,6 @@ def create_shopcarts():
     Creates a Shopcart
     This endpoint will create an Shopcart based the data in the body that is posted
     """
-    print("create shopcart")
     app.logger.info("Request to create an Shopcart")
     check_content_type("application/json")
     # Create the shopcart
