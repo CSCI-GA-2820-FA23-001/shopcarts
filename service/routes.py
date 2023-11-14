@@ -92,16 +92,16 @@ def delete_items(shopcart_id, item_id):
     check_content_type("application/json")
 
     shopcart = Shopcart.find(shopcart_id)
-    if not shopcart:
-        abort(
-            status.HTTP_404_NOT_FOUND,
-            f"Shopcart with id '{shopcart_id}' could not be found.",
-        )
+    # if not shopcart:
+    #     abort(
+    #         status.HTTP_404_NOT_FOUND,
+    #         f"Shopcart with id '{shopcart_id}' could not be found.",
+    #     )
 
     # See if the item exists and delete it if it does
     item = Item.find(item_id)
-    if not item:
-        abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
+    # if not item:
+    #     abort(status.HTTP_404_NOT_FOUND, f"Item with id '{item_id}' was not found.")
 
     if item:
         shopcart.items.remove(item)

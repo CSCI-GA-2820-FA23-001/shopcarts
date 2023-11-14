@@ -253,6 +253,7 @@ class TestShopcartServer(TestCase):
     def test_delete_shopcart(self):
         """It should Delete a Shopcart"""
         shopcart = self._create_shopcarts(1)[0]
+
         response = self.client.delete(f"{BASE_URL}/{shopcart.id}")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -326,6 +327,7 @@ class TestShopcartServer(TestCase):
 
     def test_delete_items_invalid_para(self):
         """test if ValueError raised for bad input"""
+        self.assertRaises(TypeError, delete_items, shopcart_id="abc", item_id="bcc")
 
         self.assertRaises(TypeError, delete_items, shopcart_id=0, item_id="bcc")
 
