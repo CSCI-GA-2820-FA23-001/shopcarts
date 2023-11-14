@@ -8,12 +8,13 @@ Test cases can be run with the following:
 import os
 import logging
 from unittest import TestCase
+from datetime import datetime
+
 from service import app
 from service.models import db, Shopcart, init_db, Item
 from service.common import status  # HTTP Status Codes
 from service.routes import read_item, update_item, delete_items, update_shopcart
 from tests.factories import ShopcartFactory, ItemFactory
-from datetime import datetime
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
