@@ -417,11 +417,11 @@ class TestShopcartServer(TestCase):
         fake_items = self.client.post(
             f"{BASE_URL}/{fake_shopcarts[0].id}/items", json=test_item.serialize()
         ).get_json()
+
         response = self.client.get(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), 3)
-
         response = self.client.get(
             BASE_URL,
             query_string=f"maxprice={fake_items['price']*fake_items['quantity']}",
