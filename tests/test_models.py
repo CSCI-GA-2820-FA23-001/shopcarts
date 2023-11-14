@@ -107,8 +107,8 @@ class TestShopcart(unittest.TestCase):
         self.assertIsNone(new_shopcart.creation_time)
         self.assertNotEqual(new_shopcart.last_updated_time, shopcart.last_updated_time)
         self.assertEqual(new_shopcart.total_price, shopcart.total_price)
-        for i1, i2 in zip(new_shopcart.items, shopcart.items):
-            self.assertEqual(i1.id, i2.id)
+        for newItem, oldItem in zip(new_shopcart.items, shopcart.items):
+            self.assertEqual(newItem.id, oldItem.id)
 
     def test_deserialize_shopcart_with_key_error(self):
         """It should not Deserialize an shopcart with a KeyError"""

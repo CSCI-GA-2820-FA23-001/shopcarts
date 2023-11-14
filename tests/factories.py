@@ -36,7 +36,7 @@ class ShopcartFactory(factory.Factory):
 
         model = Shopcart
 
-    id = factory.Sequence(lambda n: n)
+    # id = factory.Sequence(lambda n: n)
     customer_id = FuzzyInteger(0, 100)
     creation_time = datetime.now()
     last_updated_time = datetime.now()
