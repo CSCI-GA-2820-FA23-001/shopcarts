@@ -398,6 +398,24 @@ class TestShopcartServer(TestCase):
         data = response.get_json()
         self.assertEqual(len(data), 5)
 
+    def test_query_list_shopcarts(self):
+        """It should List shopcarts with query"""
+        fake_shopcarts = self._create_shopcarts(3)
+        fake_items = self._create_items(1, fake_shopcarts[0].id)
+        response = self.client.get(BASE_URL, query_string=f"item={fake_items[0].id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]["id"], fake_items[0].shopcart_id)
+        response = self.client.get(BASE_URL, query_string=f"maxprice={fake_shopcarts[0].total_price}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 3)
+        response = self.client.get(BASE_URL, query_string=f"minprice={fake_shopcarts[0].total_price}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data[0]["id"], fake_shopcarts[0].id)
+
     def test_get_item_list(self):
         """It should Get a list of Items"""
         test_shopcart = self._create_shopcarts(1)[0]

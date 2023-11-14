@@ -331,7 +331,7 @@ def list_items(shopcart_id):
 
 
 ######################################################################
-# List all shopcarts
+# LIST SHOPCARTS
 ######################################################################
 
 
@@ -340,9 +340,28 @@ def list_shopcarts():
     """Return all the shopcarts"""
     app.logger.info("Request for shopcarts list")
     shopcarts = []
-
     shopcarts = Shopcart.all()
     if not shopcarts:
         return make_response(jsonify([]), status.HTTP_200_OK)
     results = [shopcart.serialize() for shopcart in shopcarts]
+    item_id = request.args.get("item")
+    max_price = request.args.get("maxprice")
+    min_price = request.args.get("minprice")
+
+    if max_price:
+        results = [
+            cart for cart in results if cart["total_price"] <= float(max_price)
+        ]
+    if min_price:
+        results = [
+            cart for cart in results if cart["total_price"] >= float(min_price)
+        ]
+    if item_id:
+        temp = []
+        for cart in results:
+            for item in cart["items"]:
+                if item["id"] == int(item_id):
+                    temp.append(cart)
+                    break
+        results = temp
     return make_response(jsonify(results), status.HTTP_200_OK)
