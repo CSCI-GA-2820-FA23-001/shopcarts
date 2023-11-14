@@ -426,6 +426,22 @@ class TestShopcartServer(TestCase):
         data = response.get_json()
         self.assertEqual(len(data), 5)
 
+        # Test with price filter
+        response = self.client.get(f"{BASE_URL}/{test_shopcart.id}/items?price=20.0")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(
+            len(data), 0
+        )  # Assuming no item has a price of 20.0 in this test case
+
+        # Test with name filter
+        response = self.client.get(f"{BASE_URL}/{test_shopcart.id}/items?name=apple")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(
+            len(data), 0
+        )  # Assuming no item has "apple" in its name in this test case
+
     def test_get_item_list_not_found(self):
         """It should not Get a list of Items thats not Found"""
 
