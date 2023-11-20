@@ -16,7 +16,7 @@ Note: This repo has a both a .devcontainer folder and a Vagrantfile for two ways
 This is a flask application. Thus, use
 
 ```
-Flaks Run
+Flask Run
 ```
 to run the application. 
 
