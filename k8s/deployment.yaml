@@ -22,6 +22,10 @@ spec:
       imagePullSecrets:
       - name: all-icr-io
       restartPolicy: Always
+      initContainers:
+      - name: check-postgres
+        image: busybox
+        command: ['sh', '-c', 'until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done;']
       containers:
       - name: shopcarts
         image: cluster-registry:32000/shopcarts:1.0

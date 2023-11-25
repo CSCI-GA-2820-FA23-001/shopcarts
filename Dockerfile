@@ -1,6 +1,3 @@
-##################################################
-# Create a builder image to compile in
-##################################################
 FROM python:3.11-slim as builder
 
 # Added libraries for PostgreSQL before pip install

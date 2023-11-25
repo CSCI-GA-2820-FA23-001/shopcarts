@@ -38,6 +38,14 @@ spec:
             requests:
               cpu: "0.25"
               memory: "64Mi"
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - pg_isready -U flask -h localhost
+            initialDelaySeconds: 5
+            periodSeconds: 10
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:
@@ -88,4 +96,5 @@ metadata:
   name: postgres-creds
 data:
   password: cG9zdGdyZXM=
+  # password: czNjcjN0LWtleS1zaGhoaA==
   database_uri: cG9zdGdyZXNxbDovL3Bvc3RncmVzOnBvc3RncmVzQHBvc3RncmVzOjU0MzIvcG9zdGdyZXM=
