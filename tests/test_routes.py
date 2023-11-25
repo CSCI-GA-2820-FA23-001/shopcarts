@@ -480,3 +480,10 @@ class TestShopcartServer(TestCase):
         data = response.get_json()
         logging.debug("Response data = %s", data)
         self.assertIn("was not found", data["message"])
+
+    def test_health(self):
+        """It should Get the health endpoint"""
+        resp = self.client.get("/health")
+        self.assertEqual(resp.status_code, 200)
+        data = resp.get_json()
+        self.assertEqual(data["status"], "OK")
