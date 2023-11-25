@@ -28,6 +28,7 @@ def index():
 #  K8S HEALTH POINTS
 ######################################################################
 
+
 @app.route("/health")
 def health():
     """Health Status"""
