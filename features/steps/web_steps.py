@@ -14,7 +14,7 @@
 # limitations under the License.
 ######################################################################
 
-# pylint: disable=function-redefined, missing-function-docstring
+# pylint: disable=function-redefined, missing-function-docstring, no-name-in-module
 # flake8: noqa
 """
 Web Steps

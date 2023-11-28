@@ -113,4 +113,22 @@ Scenario: List items in a shopcart
     Then I should see the message "Success"
     And I should see "itemOne" in the item results
 
+Scenario: Delete a Shopcart
+    When I visit the "Home Page"
+    And I set the "Customer ID" to "0"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the "Shopcart ID" field
+    And I press the "Clear" button
+    Then the "Shopcart ID" field should be empty
+    When I paste the "Shopcart ID" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    When I press the "Delete" button
+    Then I should see the message "Shopcart has been Deleted!"   
+    When I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should not see "Shopcart ID" in the results
+
 
