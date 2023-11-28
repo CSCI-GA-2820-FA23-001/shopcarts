@@ -14,6 +14,8 @@
 # limitations under the License.
 ######################################################################
 
+# pylint: disable=function-redefined, missing-function-docstring, no-name-in-module
+
 """
 Shopcart Steps
 Steps file for Shopcarts.feature
