@@ -24,6 +24,7 @@ def index():
     """Root URL response"""
     return app.send_static_file("index.html")
 
+
 ######################################################################
 #  K8S HEALTH POINTS
 ######################################################################
@@ -230,6 +231,7 @@ def create_shopcarts():
     shopcart.create()
     # Create a message to return
     message = shopcart.serialize()
+
     location_url = url_for("create_shopcarts", shopcart_id=shopcart.id, _external=True)
 
     return make_response(
@@ -300,6 +302,8 @@ def empty_shopcart(shopcart_id):
     if shopcart:
         for item in shopcart.items:
             item.delete()
+    shopcart.total_price = 0
+    shopcart.update()
     return make_response("", status.HTTP_204_NO_CONTENT)
 
 
@@ -362,9 +366,12 @@ def list_shopcarts():
     if not shopcarts:
         return make_response(jsonify([]), status.HTTP_200_OK)
     results = [shopcart.serialize() for shopcart in shopcarts]
+    customer_id = request.args.get("customer_id")
     item_id = request.args.get("item")
     max_price = request.args.get("maxprice")
     min_price = request.args.get("minprice")
+    if customer_id:
+        results = [cart for cart in results if cart["customer_id"] == int(customer_id)]
     if max_price:
         results = [
             cart
@@ -385,4 +392,5 @@ def list_shopcarts():
                     temp.append(cart)
                     break
         results = temp
+
     return make_response(jsonify(results), status.HTTP_200_OK)

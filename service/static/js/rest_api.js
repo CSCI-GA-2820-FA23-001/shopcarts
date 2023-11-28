@@ -7,8 +7,13 @@ $(function () {
     // Updates the form with data from the response
     function update_form_data(res) {
         $("#shopcart_id").val(res.id);
-        $("#customer_id").val(res.customer_id)
-        $("#item_id").val("");
+        $("#customer_id").val(res.customer_id);
+        if (res.items.length!=0) {
+            $("#item_id").val(res.items[0].id);
+        } else {
+            $("#item_id").val("");
+        }
+        
         $("#max_total_price").val(res.total_price);
         $("#min_total_price").val(res.total_price);
     }
@@ -224,11 +229,14 @@ $(function () {
         let item_id = $("#item_id").val();
         let max_price = $("#max_total_price").val();
         let min_price = $("#min_total_price").val();
-
+        let customer_id = $("#customer_id").val();
         let queryString = ""
 
         if (item_id) {
             queryString += 'item=' + item_id
+        }
+        if (customer_id) {
+            queryString += 'customer_id=' + customer_id
         }
         if (max_price) {
             if (queryString.length > 0) {

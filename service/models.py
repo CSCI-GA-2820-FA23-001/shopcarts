@@ -114,7 +114,7 @@ class Shopcart(db.Model, PersistentBase):
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.customer_id = data["customer_id"]
+            self.customer_id = int(data["customer_id"])
             # self.creation_time = datetime.fromisoformat(data["creation_time"])
             self.last_updated_time = datetime.now()
 
