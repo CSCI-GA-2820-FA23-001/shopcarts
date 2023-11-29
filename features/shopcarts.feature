@@ -168,3 +168,19 @@ Scenario: Update an item in a shopcart
     And I should see "3" in the "Item Quantity" field
     And I should see "4.99" in the "Item Price" field
     And I should see "Updated itemOne for customer 0" in the "item description" field
+
+Scenario: Update a shopcart
+    When I visit the "Home Page"
+    And I set the "customer id" to "0"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the "Shopcart ID" field 
+    And I paste the "Shopcart id" field 
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "0" in the "customer id" field
+
+    When I set the "customer id" to "5" 
+    And I press the "Update" button
+    Then I should see the message "Success"
+    And I should see "5" in the "customer id" field
