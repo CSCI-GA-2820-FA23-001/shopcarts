@@ -131,4 +131,17 @@ Scenario: Delete a Shopcart
     Then I should see the message "Success"
     And I should not see "Shopcart ID" in the results
 
-
+Scenario: Empty a shopcart 
+    When I visit the "Home Page"
+    And I set the "Customer ID" to "1"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the "Shopcart ID" field
+    And I paste the "Item Shopcart id" field
+    And I press the "Item search" button
+    Then I should see the message "Success"
+    And I should see "itemTwo" in the item results
+    When I press the "Empty" button
+    Then I should see the message "Shopcart has been emptied!"
+    When I press the "Item search" button
+    Then I should not see "itemTwo" in the item results
