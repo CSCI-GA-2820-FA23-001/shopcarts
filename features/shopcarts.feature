@@ -145,3 +145,26 @@ Scenario: Empty a shopcart
     Then I should see the message "Shopcart has been emptied!"
     When I press the "Item search" button
     Then I should not see "itemTwo" in the item results
+
+Scenario: Update an item in a shopcart
+    When I visit the "Home Page"
+    And I set the "customer id" to "0"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the "Item ID" field 
+    And I paste the "item item id" field
+    And I copy the "Shopcart ID" field 
+    And I paste the "Item Shopcart id" field 
+    And I press the "Item Retrieve" button
+    Then I should see the message "Success"
+    And I should see "itemOne" in the "item name" field
+
+    When I set the "Item Quantity" to "3" 
+    And I set the "Item Price" to "4.99"
+    And I set the "item description" to "Updated itemOne for customer 0"
+    And I press the "Item Update" button
+    Then I should see the message "Success"
+    And I should see "itemOne" in the "item name" field
+    And I should see "3" in the "Item Quantity" field
+    And I should see "4.99" in the "Item Price" field
+    And I should see "Updated itemOne for customer 0" in the "item description" field
