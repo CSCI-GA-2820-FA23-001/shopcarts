@@ -184,3 +184,19 @@ Scenario: Update a shopcart
     And I press the "Update" button
     Then I should see the message "Success"
     And I should see "5" in the "customer id" field
+
+Scenario: Delete an item from a shopcart
+    When I visit the "Home Page"
+    And I set the "customer id" to "0"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the "Item ID" field 
+    And I paste the "item item id" field
+    And I copy the "Shopcart ID" field 
+    And I paste the "Item Shopcart id" field 
+    And I press the "Item Retrieve" button
+    Then I should see the message "Success"
+    And I should see "itemOne" in the "item name" field
+
+    When I press the "Item Delete" button
+    Then I should see the message "Item has been Deleted!"
