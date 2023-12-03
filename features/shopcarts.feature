@@ -197,6 +197,14 @@ Scenario: Delete an item from a shopcart
     And I press the "Item Retrieve" button
     Then I should see the message "Success"
     And I should see "itemOne" in the "item name" field
-
     When I press the "Item Delete" button
     Then I should see the message "Item has been Deleted!"
+
+Scenario: List the shopcarts fit for Query
+    When I visit the "Home Page"    
+    And I set the "max total price" to "10"
+    And I set the "min_total_price" to "0.1"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "1" in the results
+    And I should see "2" in the results
