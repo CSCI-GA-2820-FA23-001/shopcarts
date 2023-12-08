@@ -17,7 +17,7 @@ DELETE /shopcarts/{id}/items/{id} - deletes a Item record in the database
 GET /shopcarts/{id}/items/{id} - returns a list of Items from the database
 """
 
-from flask import jsonify, request, url_for, abort, make_response
+from flask import jsonify, request, abort, make_response
 from flask_restx import Resource, fields, reqparse
 
 # from jinja2.exceptions import TemplateNotFound
