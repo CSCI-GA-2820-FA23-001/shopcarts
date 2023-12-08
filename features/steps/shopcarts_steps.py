@@ -31,7 +31,7 @@ from compare import expect
 def step_impl(context):
     """Delete all Shop carts and load new ones"""
     # List all of the shop carts and delete them one by one
-    rest_endpoint = f"{context.base_url}/shopcarts"
+    rest_endpoint = f"{context.base_url}/api/shopcarts"
     context.resp = requests.get(rest_endpoint)
     expect(context.resp.status_code).to_equal(200)
     for shopcart in context.resp.json():
@@ -47,7 +47,7 @@ def step_impl(context):
 
 @given("the following items")
 def step_impl(context):
-    rest_endpoint = f"{context.base_url}/shopcarts"
+    rest_endpoint = f"{context.base_url}/api/shopcarts"
     for row in context.table:
         resp = requests.get(rest_endpoint + "?customer_id=" + row["customer_id"])
         expect(resp.status_code).to_equal(200)

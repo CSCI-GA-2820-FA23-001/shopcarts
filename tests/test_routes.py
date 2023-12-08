@@ -13,14 +13,13 @@ from datetime import datetime
 from service import app
 from service.models import db, Shopcart, init_db, Item
 from service.common import status  # HTTP Status Codes
-from service.routes import read_item, update_item, delete_items, update_shopcart
 from tests.factories import ShopcartFactory, ItemFactory
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 
-BASE_URL = "/shopcarts"
+BASE_URL = "/api/shopcarts"
 
 
 ######################################################################
@@ -313,30 +312,12 @@ class TestShopcartServer(TestCase):
 
     def test_get_shopcart_not_found(self):
         """It should not Get a Shopcart thats not found"""
-        response = self.client.get(f"{BASE_URL}/0")
+        test_shopcart_id = 0
+        response = self.client.get(f"{BASE_URL}/{test_shopcart_id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         data = response.get_json()
         logging.debug("Response data = %s", data)
-        self.assertIn("was not found", data["message"])
-
-    def test_read_item_invalid_para(self):
-        """test if ValueError raised for bad input"""
-
-        self.assertRaises(TypeError, read_item, cart_id="abc", item_id="bcc")
-
-    def test_delete_items_invalid_para(self):
-        """test if ValueError raised for bad input"""
-        self.assertRaises(TypeError, delete_items, shopcart_id="abc", item_id="bcc")
-
-        self.assertRaises(TypeError, delete_items, shopcart_id=0, item_id="bcc")
-
-    def test_update_item_invalid_para(self):
-        """test if ValueError raised for bad input when updating item"""
-        self.assertRaises(TypeError, update_item, cart_id="abc", item_id="bcc")
-
-    def test_update_shopcart_invalid_para(self):
-        """test if ValueError raised for bad input when updating shopcart"""
-        self.assertRaises(TypeError, update_shopcart, shopcart_id="abc")
+        self.assertIn("could not be found", data["message"])
 
     def test_update_shopcart_not_found(self):
         """test if error aborted for shopcart not exist when updating shopcart"""
