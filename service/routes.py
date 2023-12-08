@@ -235,7 +235,7 @@ class ShopcartsResource(Resource):
 #  PATH: /shopcarts
 ######################################################################
 @api.route("/shopcarts", strict_slashes=False)
-class shopcartsCollection(Resource):
+class ShopcartsCollection(Resource):
     """Handles all interactions with collections of Shopcarts"""
 
     # ------------------------------------------------------------------
