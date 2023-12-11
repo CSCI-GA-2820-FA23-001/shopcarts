@@ -6,12 +6,22 @@ All of the models are stored in this module
 import logging
 from abc import abstractmethod
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy as _BaseSQLAlchemy
 
 
 logger = logging.getLogger("flask.app")
 
 # Create the SQLAlchemy object to be initialized later in init_db()
+
+
+class SQLAlchemy(_BaseSQLAlchemy):
+    """Fixes the SQLAlchemy init_app() bug"""
+    def apply_pool_defaults(self, app, options):
+        """Configure SQLAlchemy to use pre ping"""
+        super().apply_pool_defaults(app, options)
+        options["pool_pre_ping"] = True
+
+
 db = SQLAlchemy()
 
 
