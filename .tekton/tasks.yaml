@@ -172,7 +172,7 @@ spec:
     default: "https://cd-pipeline-chitazzz-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com"
   steps:
     - name: run
-      image: quay.io/rofrano/pipeline-selenium
+      image: docker.io/rofrano/pipeline-selenium
       workingDir: /workspace/source 
       command: ["/bin/bash", "-c"]
       env:
@@ -192,5 +192,4 @@ spec:
             curl -L -I $(params.BASE_URL)
 
             echo "***** Running BDD *****"
-            flask run
             behave
