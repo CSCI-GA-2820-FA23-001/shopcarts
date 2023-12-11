@@ -28,9 +28,19 @@ spec:
                 secretKeyRef:
                   name: postgres-creds
                   key: password
+            - name: POSTGRES_USER
+              valueFrom:
+                  configMapKeyRef:
+                    name: postgres-config
+                    key: postgres_user
+            - name: POSTGRES_DB
+              valueFrom:
+                  configMapKeyRef:
+                    name: postgres-config
+                    key: postgres_db
           volumeMounts:
           - name: postgres-storage
-            mountPath: /var/lib/postgresql/data
+            mountPath: /var/lib/postgresql
           resources:
             limits:
               cpu: "0.50"
@@ -59,11 +69,11 @@ metadata:
   name: postgres-pvc
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
-  storageClassName: ""
+      storage: 500Mi
+    storageClassName: default
 
 ---
 apiVersion: v1
@@ -81,6 +91,13 @@ spec:
       targetPort: 5432
 
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+data:
+  postgres_user: postgres
+  postgres_db: shopcarts
 # This secret can also be created from the command line using environment variables
 #
 # export DATABASE_URI='postgresql://<place-url-to-database-here>'
@@ -90,6 +107,7 @@ spec:
 #     --from-literal=password=$POSTGRES_PASSWORD
 #     --from-literal=database_uri=$DATABASE_URI
 #
+---
 apiVersion: v1
 kind: Secret
 metadata:
