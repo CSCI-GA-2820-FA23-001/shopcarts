@@ -8,6 +8,7 @@ FROM rofrano/pipeline-selenium:latest
 ARG USERNAME=vscode
 USER $USERNAME
 
+RUN apt-get update && apt-get install -y gcc libpq-dev
 
 # Set up the Python development environment
 WORKDIR /app
@@ -17,3 +18,4 @@ RUN sudo pip install -r requirements.txt
 # Install user mode tools
 COPY .devcontainer/scripts/install-tools.sh /tmp/
 RUN cd /tmp && bash ./install-tools.sh
+

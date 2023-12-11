@@ -3,6 +3,7 @@ FROM python:3.11-slim as builder
 # Create working folder and install dependencies
 WORKDIR /app
 COPY requirements.txt .
+RUN apt-get update && apt-get install -y gcc libpq-dev
 RUN python -m venv venv && \
     . /app/venv/bin/activate && \
     pip install -U pip wheel && \
