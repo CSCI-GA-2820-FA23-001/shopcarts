@@ -8,6 +8,7 @@ FROM rofrano/pipeline-selenium:latest
 ARG USERNAME=vscode
 USER $USERNAME
 
+
 # Set up the Python development environment
 WORKDIR /app
 COPY requirements.txt .

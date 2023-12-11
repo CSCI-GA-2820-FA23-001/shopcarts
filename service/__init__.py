@@ -1,3 +1,4 @@
+# pylint: disable=C0103
 """
 Package: service
 Package for the application models and service routes
