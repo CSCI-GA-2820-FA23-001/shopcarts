@@ -3,6 +3,9 @@ Environment for Behave Testing
 """
 from os import getenv
 from selenium import webdriver
+from behave import fixture, use_fixture
+import requests
+
 
 WAIT_SECONDS = int(getenv("WAIT_SECONDS", "60"))
 BASE_URL = getenv("BASE_URL", "http://localhost:8080")
@@ -26,6 +29,20 @@ def before_all(context):
 def after_all(context):
     """Executed after all tests"""
     context.driver.quit()
+
+
+@fixture
+def setup_custom_session(context):
+    """Create a custom session for requests"""
+    context.custom_session = requests.Session()
+    context.custom_session.allow_redirects = True
+    yield context.custom_session
+    context.custom_session.close()
+
+
+def before_feature(context, feature):
+    """Executed before each feature"""
+    use_fixture(setup_custom_session, context)
 
 
 ######################################################################
