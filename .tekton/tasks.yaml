@@ -192,4 +192,5 @@ spec:
             curl -L -I $(params.BASE_URL)
 
             echo "***** Running BDD *****"
+            flask run
             behave
