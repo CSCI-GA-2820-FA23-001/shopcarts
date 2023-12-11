@@ -12,7 +12,6 @@ USER $USERNAME
 # Set up the Python development environment
 WORKDIR /app
 COPY requirements.txt .
-RUN apt-get update && apt-get install -y gcc libpq-dev
 RUN sudo pip install -r requirements.txt
 
 # Install user mode tools
