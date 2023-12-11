@@ -8,8 +8,6 @@ FROM rofrano/pipeline-selenium:latest
 ARG USERNAME=vscode
 USER $USERNAME
 
-# Added libraries for PostgreSQL before pip install
-RUN apt-get update && apt-get install -y gcc libpq-de
 
 # Set up the Python development environment
 WORKDIR /app
