@@ -6,30 +6,29 @@ services:
   app:
     build:
       context: ..
-      dockerfile: .devcontainer/Dockerfile    
+      dockerfile: .devcontainer/Dockerfile
     hostname: nyu
-    container_name: project
+    container_name: lab-openshift
     volumes:
       - ..:/app
-      # - ~/.bluemix/apikey-project.json:/home/vscode/apikey.json
     command: sleep infinity
     environment:
       FLASK_APP: service:app
       FLASK_DEBUG: "True"
-      PORT: 8000
-      DATABASE_URI: postgresql+psycopg://postgres:postgres@postgres:5432/postgres
+      GUNICORN_BIND: "0.0.0.0:8000"
+      DATABASE_URI: postgresql+psycopg://postgres:pgs3cr3t@postgres:5432/petstore
     networks:
       - dev
     depends_on:
       - postgres
 
   postgres:
-    image: postgres:alpine
-    # Uncomment ports to access database from your computer (optional)
-    ports:
-      - 5432:5432
+    image: postgres:15-alpine
+    # ports:
+    #   - 5432:5432
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: pgs3cr3t
+      POSTGRES_DB: petstore      
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:
