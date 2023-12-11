@@ -1,6 +1,3 @@
-# The petstore database should be created for you, if not here is the command:
-# psql -c "create database petstore;" -U postgres
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -91,7 +88,7 @@ metadata:
   name: postgres-config
 data:
   postgres_user: postgres
-  postgres_db: petstore 
+  postgres_db: shopcarts
 ---
 # This secret can also be created from the command line using environment variables
 #
@@ -102,12 +99,12 @@ data:
 #     --from-literal=password=$POSTGRES_PASSWORD
 #     --from-literal=database_uri=$DATABASE_URI
 #
-apiVersion: v1
 kind: Secret
+apiVersion: v1
 metadata:
   name: postgres-creds
 data:
+  database_uri: >-
+    cG9zdGdyZXNxbCtwc3ljb3BnOi8vcG9zdGdyZXM6cGdzM2NyM3RAcG9zdGdyZXNxbDo1NDMyL3Byb21vdGlvbg==
   password: cGdzM2NyM3Q=
-  database_uri: |
-      cG9zdGdyZXNxbCtwc3ljb3BnOi8vcG9zdGdyZXM6cGdzM2NyM3RAcG9zdGdyZXM6NTQzMi9wZXRz
-      dG9yZQ==
+type: Opaque
