@@ -47,10 +47,8 @@ spec:
         set -e
 
         echo "***** Installing dependencies *****"
-        sudo apt-get install build-dep python-psycopg2
-        pip install psycopg2-binary 
         python -m pip install --upgrade pip wheel
-        
+        pip install psycopg2-binary 
         pip install -qr requirements.txt
 
         echo "***** Running Tests *****"
