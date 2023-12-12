@@ -169,7 +169,7 @@ spec:
   - name: BASE_URL
     description: The base url to the shopcarts microservice
     type: string
-    default: "https://cd-pipeline-chitazzz-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com"
+    default: "https://shopcarts-app-chitazzz-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com"
   steps:
     - name: run
       image: docker.io/rofrano/pipeline-selenium
