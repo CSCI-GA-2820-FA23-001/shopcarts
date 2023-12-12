@@ -1,5 +1,8 @@
 FROM python:3.11-slim as builder
 
+# Added libraries for PostgreSQL before pip install
+RUN apt-get update && apt-get install -y gcc libpq-dev
+
 # Create working folder and install dependencies
 WORKDIR /app
 COPY requirements.txt .

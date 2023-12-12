@@ -347,12 +347,9 @@ class ItemsResource(Resource):
     ItemsResource class
 
     Allows the manipulation of a single Item
-    GET /shopcarts/<shopcart_id>/items/<item_id>
-    - Returns an Item with the item_id inside Shopcart with shopcart_id
-    PUT /shopcarts/<shopcart_id>/items/<item_id>
-    - Update an Item with the item_id inside Shopcart with shopcart_id
-    DELETE /shopcarts/<shopcart_id>/items/<item_id>
-    - Deletes an Item with the item_id inside Shopcart with shopcart_id
+    GET /shopcarts/<shopcart_id>/items/<item_id> - Returns an Item with the item_id inside Shopcart with shopcart_id
+    PUT /shopcarts/<shopcart_id>/items/<item_id> - Update an Item with the item_id inside Shopcart with shopcart_id
+    DELETE /shopcarts/<shopcart_id>/items/<item_id> -  Deletes an Item with the item_id inside Shopcart with shopcart_id
     """
 
     # ------------------------------------------------------------------
